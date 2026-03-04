@@ -66,7 +66,7 @@ For contributing bug fixes or implementing approved features:
 ### 1. Check existing code and guidelines
 
 Before starting your contribution:
-- **Examine existing modules** in the `src/cloud_sdk_python/` directory (e.g., `auditlog`, `objectstore`, `destination`) to understand implementation patterns
+- **Examine existing modules** in the `src/sap_cloud_sdk/` directory (e.g., `auditlog`, `objectstore`, `destination`) to understand implementation patterns
 - **Read [Code Guidelines](./GUIDELINES.md)** to understand our development standards and conventions
 - **Review existing user guides** to understand the expected documentation format and API patterns
 
@@ -115,7 +115,7 @@ For new features or capabilities:
 - Follow existing patterns in similar modules (e.g., `auditlog`, `objectstore`, `destination`)
 - **Module Structure**: If creating a new module, use the standard Python package structure:
   ```
-  src/cloud_sdk_python/[module-name]/
+  src/sap_cloud_sdk/[module-name]/
   ├── __init__.py
   ├── client.py
   ├── config.py

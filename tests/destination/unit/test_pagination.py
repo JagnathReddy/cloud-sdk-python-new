@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import MagicMock
 from requests import Response
 
-from cloud_sdk_python.destination.utils._pagination import (
+from sap_cloud_sdk.destination.utils._pagination import (
     PaginationInfo,
     PagedResult,
     parse_pagination_headers,

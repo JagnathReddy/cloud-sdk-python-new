@@ -3,16 +3,16 @@
 import pytest
 from unittest.mock import patch, MagicMock
 
-from cloud_sdk_python.core.auditlog import create_client, AuditLogClient
-from cloud_sdk_python.core.auditlog._http_transport import HttpTransport
-from cloud_sdk_python.core.auditlog.config import AuditLogConfig
-from cloud_sdk_python.core.auditlog.exceptions import ClientCreationError
+from sap_cloud_sdk.core.auditlog import create_client, AuditLogClient
+from sap_cloud_sdk.core.auditlog._http_transport import HttpTransport
+from sap_cloud_sdk.core.auditlog.config import AuditLogConfig
+from sap_cloud_sdk.core.auditlog.exceptions import ClientCreationError
 
 
 class TestCreateClient:
 
-    @patch('cloud_sdk_python.core.auditlog._load_config_from_env')
-    @patch('cloud_sdk_python.core.auditlog.HttpTransport')
+    @patch('sap_cloud_sdk.core.auditlog._load_config_from_env')
+    @patch('sap_cloud_sdk.core.auditlog.HttpTransport')
     def test_create_client_cloud_mode(self, mock_http_transport, mock_load_config):
         mock_config = AuditLogConfig(
             client_id="test_client",
@@ -32,7 +32,7 @@ class TestCreateClient:
         mock_http_transport.assert_called_once_with(mock_config)
         assert client._transport == mock_transport
 
-    @patch('cloud_sdk_python.core.auditlog.HttpTransport')
+    @patch('sap_cloud_sdk.core.auditlog.HttpTransport')
     def test_create_client_with_custom_config(self, mock_http_transport):
         custom_config = AuditLogConfig(
             client_id="custom_client",
@@ -50,15 +50,15 @@ class TestCreateClient:
         mock_http_transport.assert_called_once_with(custom_config)
         assert client._transport == mock_transport
 
-    @patch('cloud_sdk_python.core.auditlog._load_config_from_env')
+    @patch('sap_cloud_sdk.core.auditlog._load_config_from_env')
     def test_create_client_config_loading_exception(self, mock_load_config):
         mock_load_config.side_effect = Exception("Config loading failed")
         
         with pytest.raises(ClientCreationError, match="Failed to create audit log client"):
             create_client()
 
-    @patch('cloud_sdk_python.core.auditlog._load_config_from_env')
-    @patch('cloud_sdk_python.core.auditlog.HttpTransport')
+    @patch('sap_cloud_sdk.core.auditlog._load_config_from_env')
+    @patch('sap_cloud_sdk.core.auditlog.HttpTransport')
     def test_create_client_http_transport_exception(self, mock_http_transport, mock_load_config):
         mock_config = AuditLogConfig(
             client_id="test_client",
@@ -73,7 +73,7 @@ class TestCreateClient:
         with pytest.raises(ClientCreationError, match="Failed to create audit log client"):
             create_client()
 
-    @patch('cloud_sdk_python.core.auditlog.HttpTransport')
+    @patch('sap_cloud_sdk.core.auditlog.HttpTransport')
     def test_create_client_custom_config_transport_exception(self, mock_http_transport):
         custom_config = AuditLogConfig(
             client_id="custom_client",
@@ -87,9 +87,9 @@ class TestCreateClient:
         with pytest.raises(ClientCreationError, match="Failed to create audit log client"):
             create_client(config=custom_config)
 
-    @patch('cloud_sdk_python.core.auditlog._load_config_from_env')
-    @patch('cloud_sdk_python.core.auditlog.HttpTransport')
-    @patch('cloud_sdk_python.core.auditlog.AuditLogClient')
+    @patch('sap_cloud_sdk.core.auditlog._load_config_from_env')
+    @patch('sap_cloud_sdk.core.auditlog.HttpTransport')
+    @patch('sap_cloud_sdk.core.auditlog.AuditLogClient')
     def test_create_client_client_creation_exception(self, mock_client_class, mock_http_transport, mock_load_config):
         mock_config = AuditLogConfig(
             client_id="test_client",
@@ -115,6 +115,6 @@ class TestCreateClient:
             service_url="https://service.example.com"
         )
         
-        with patch('cloud_sdk_python.core.auditlog.HttpTransport'):
+        with patch('sap_cloud_sdk.core.auditlog.HttpTransport'):
             with pytest.raises(TypeError):
                 create_client(config)

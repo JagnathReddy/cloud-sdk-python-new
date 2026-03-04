@@ -9,8 +9,8 @@ from typing import Dict, List, Any, Optional
 import pytest
 from pytest_bdd import scenarios, given, when, then, parsers
 
-from cloud_sdk_python.objectstore import create_client
-from cloud_sdk_python.objectstore.exceptions import (
+from sap_cloud_sdk.objectstore import create_client
+from sap_cloud_sdk.objectstore.exceptions import (
     ObjectNotFoundError,
     ObjectOperationError,
 )

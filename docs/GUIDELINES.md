@@ -2,7 +2,7 @@
 
 ## Project Structure
 - `src/`: Source code following the src-layout pattern
-- `src/cloud_sdk_python/`: Main package namespace
+- `src/sap_cloud_sdk/`: Main package namespace
 - `tests/`: Test code mirroring the source structure  
 - Private implementation modules use underscore prefix (e.g., `_s3.py`, `_models.py`)
 - Keep internal packages organized with clear separation of concerns
@@ -83,7 +83,7 @@
 2. Add operation constants to `core/telemetry/operation.py`
 3. Apply decorator to client methods:ß
    ```python
-   from cloud_sdk_python.core.telemetry import Module, Operation, record_metrics
+   from sap_cloud_sdk.core.telemetry import Module, Operation, record_metrics
    
    @record_metrics(Module.MY_MODULE, Operation.MY_OPERATION)
    def my_operation(self):

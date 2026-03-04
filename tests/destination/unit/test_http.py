@@ -5,14 +5,14 @@ from unittest.mock import MagicMock, patch
 from requests import Response
 from requests.exceptions import RequestException
 
-from cloud_sdk_python.destination._http import TokenProvider, DestinationHttp
-from cloud_sdk_python.destination.config import DestinationConfig
-from cloud_sdk_python.destination.exceptions import HttpError
+from sap_cloud_sdk.destination._http import TokenProvider, DestinationHttp
+from sap_cloud_sdk.destination.config import DestinationConfig
+from sap_cloud_sdk.destination.exceptions import HttpError
 
 
 class TestTokenProvider:
 
-    @patch("cloud_sdk_python.destination._http.OAuth2Session")
+    @patch("sap_cloud_sdk.destination._http.OAuth2Session")
     def test_fetch_token(self, mock_oauth):
         mock_session = MagicMock()
         mock_oauth.return_value = mock_session
@@ -51,7 +51,7 @@ class TestTokenProvider:
             include_client_id=True,
         )
 
-    @patch("cloud_sdk_python.destination._http.OAuth2Session")
+    @patch("sap_cloud_sdk.destination._http.OAuth2Session")
     def test_missing_access_token_raises(self, mock_oauth):
         mock_session = MagicMock()
         mock_oauth.return_value = mock_session
@@ -72,7 +72,7 @@ class TestTokenProvider:
         with pytest.raises(HttpError, match="missing access_token"):
             provider.get_token()
 
-    @patch("cloud_sdk_python.destination._http.OAuth2Session")
+    @patch("sap_cloud_sdk.destination._http.OAuth2Session")
     def test_tenant_subdomain_replaces_identityzone(self, mock_oauth):
         mock_session = MagicMock()
         mock_oauth.return_value = mock_session

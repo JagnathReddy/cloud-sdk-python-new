@@ -3,7 +3,7 @@
 from datetime import datetime
 import pytest
 
-from cloud_sdk_python.objectstore._models import ObjectStoreBindingData, ObjectMetadata
+from sap_cloud_sdk.objectstore._models import ObjectStoreBindingData, ObjectMetadata
 
 
 class TestObjectStoreBindingData:

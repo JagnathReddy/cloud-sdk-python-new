@@ -4,10 +4,10 @@ import pytest
 from unittest.mock import patch, MagicMock
 import requests
 
-from cloud_sdk_python.core.auditlog._http_transport import HttpTransport
-from cloud_sdk_python.core.auditlog._transport import Transport
-from cloud_sdk_python.core.auditlog.config import AuditLogConfig
-from cloud_sdk_python.core.auditlog.models import (
+from sap_cloud_sdk.core.auditlog._http_transport import HttpTransport
+from sap_cloud_sdk.core.auditlog._transport import Transport
+from sap_cloud_sdk.core.auditlog.config import AuditLogConfig
+from sap_cloud_sdk.core.auditlog.models import (
     SecurityEvent,
     DataAccessEvent,
     DataModificationEvent,
@@ -16,7 +16,7 @@ from cloud_sdk_python.core.auditlog.models import (
     ConfigurationDeletionEvent,
     DataAccessAttribute
 )
-from cloud_sdk_python.core.auditlog.exceptions import TransportError, AuthenticationError
+from sap_cloud_sdk.core.auditlog.exceptions import TransportError, AuthenticationError
 
 
 class TestHttpTransport:
@@ -24,7 +24,7 @@ class TestHttpTransport:
     def test_inherits_from_transport(self):
         assert issubclass(HttpTransport, Transport)
 
-    @patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session')
+    @patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session')
     def test_initialization_success(self, mock_oauth_session):
         mock_session = MagicMock()
         mock_oauth_session.return_value = mock_session
@@ -46,7 +46,7 @@ class TestHttpTransport:
             client_secret="test_secret"
         )
 
-    @patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session')
+    @patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session')
     def test_initialization_oauth_url_with_trailing_slash(self, mock_oauth_session):
         mock_session = MagicMock()
         mock_oauth_session.return_value = mock_session
@@ -67,7 +67,7 @@ class TestHttpTransport:
             client_secret="test_secret"
         )
 
-    @patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session')
+    @patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session')
     def test_initialization_auth_failure(self, mock_oauth_session):
         mock_session = MagicMock()
         mock_oauth_session.return_value = mock_session
@@ -84,7 +84,7 @@ class TestHttpTransport:
             HttpTransport(config)
 
     def test_get_endpoint_security_event(self):
-        with patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
+        with patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
             mock_session = MagicMock()
             mock_oauth.return_value = mock_session
             mock_session.fetch_token.return_value = {"access_token": "test_token"}
@@ -103,7 +103,7 @@ class TestHttpTransport:
             assert endpoint == "/security-events"
 
     def test_get_endpoint_data_access_event(self):
-        with patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
+        with patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
             mock_session = MagicMock()
             mock_oauth.return_value = mock_session
             mock_session.fetch_token.return_value = {"access_token": "test_token"}
@@ -128,7 +128,7 @@ class TestHttpTransport:
             assert endpoint == "/data-accesses"
 
     def test_get_endpoint_data_modification_event(self):
-        with patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
+        with patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
             mock_session = MagicMock()
             mock_oauth.return_value = mock_session
             mock_session.fetch_token.return_value = {"access_token": "test_token"}
@@ -153,7 +153,7 @@ class TestHttpTransport:
             assert endpoint == "/data-modifications"
 
     def test_get_endpoint_data_deletion_event(self):
-        with patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
+        with patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
             mock_session = MagicMock()
             mock_oauth.return_value = mock_session
             mock_session.fetch_token.return_value = {"access_token": "test_token"}
@@ -178,7 +178,7 @@ class TestHttpTransport:
             assert endpoint == "/data-modifications"
 
     def test_get_endpoint_configuration_change_event(self):
-        with patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
+        with patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
             mock_session = MagicMock()
             mock_oauth.return_value = mock_session
             mock_session.fetch_token.return_value = {"access_token": "test_token"}
@@ -201,7 +201,7 @@ class TestHttpTransport:
             assert endpoint == "/configuration-changes"
 
     def test_get_endpoint_configuration_deletion_event(self):
-        with patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
+        with patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
             mock_session = MagicMock()
             mock_oauth.return_value = mock_session
             mock_session.fetch_token.return_value = {"access_token": "test_token"}
@@ -224,7 +224,7 @@ class TestHttpTransport:
             assert endpoint == "/configuration-changes"
 
     def test_get_endpoint_unknown_event(self):
-        with patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
+        with patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session') as mock_oauth:
             mock_session = MagicMock()
             mock_oauth.return_value = mock_session
             mock_session.fetch_token.return_value = {"access_token": "test_token"}
@@ -244,7 +244,7 @@ class TestHttpTransport:
             with pytest.raises(TransportError, match="Unknown event type"):
                 transport._get_endpoint(UnknownEvent())
 
-    @patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session')
+    @patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session')
     def test_send_success(self, mock_oauth_session):
         mock_session = MagicMock()
         mock_oauth_session.return_value = mock_session
@@ -273,7 +273,7 @@ class TestHttpTransport:
             timeout=10
         )
 
-    @patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session')
+    @patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session')
     def test_send_service_url_with_trailing_slash(self, mock_oauth_session):
         mock_session = MagicMock()
         mock_oauth_session.return_value = mock_session
@@ -303,7 +303,7 @@ class TestHttpTransport:
             timeout=10
         )
 
-    @patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session')
+    @patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session')
     def test_send_http_error_status(self, mock_oauth_session):
         mock_session = MagicMock()
         mock_oauth_session.return_value = mock_session
@@ -327,7 +327,7 @@ class TestHttpTransport:
         with pytest.raises(TransportError, match="POST request .* completed with status 400"):
             transport.send(event)
 
-    @patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session')
+    @patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session')
     def test_send_network_error(self, mock_oauth_session):
         mock_session = MagicMock()
         mock_oauth_session.return_value = mock_session
@@ -348,7 +348,7 @@ class TestHttpTransport:
         with pytest.raises(TransportError, match="Network error"):
             transport.send(event)
 
-    @patch('cloud_sdk_python.core.auditlog._http_transport.OAuth2Session')
+    @patch('sap_cloud_sdk.core.auditlog._http_transport.OAuth2Session')
     def test_send_unexpected_error(self, mock_oauth_session):
         mock_session = MagicMock()
         mock_oauth_session.return_value = mock_session

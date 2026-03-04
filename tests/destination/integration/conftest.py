@@ -12,12 +12,12 @@ from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 
-from cloud_sdk_python.destination import (
+from sap_cloud_sdk.destination import (
     create_client,
     create_fragment_client,
     create_certificate_client,
 )
-from cloud_sdk_python.destination.config import DestinationConfig
+from sap_cloud_sdk.destination.config import DestinationConfig
 
 
 @pytest.fixture(scope="session")

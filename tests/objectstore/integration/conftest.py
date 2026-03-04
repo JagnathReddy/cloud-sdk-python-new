@@ -9,8 +9,8 @@ from typing import Dict, Any
 import pytest
 from dotenv import load_dotenv
 
-from cloud_sdk_python.objectstore import create_client
-from cloud_sdk_python.objectstore._models import ObjectStoreBindingData
+from sap_cloud_sdk.objectstore import create_client
+from sap_cloud_sdk.objectstore._models import ObjectStoreBindingData
 
 
 logger = logging.getLogger(__name__)

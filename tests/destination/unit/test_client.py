@@ -4,8 +4,8 @@ import pytest
 from unittest.mock import MagicMock, patch
 from requests import Response
 
-from cloud_sdk_python.destination.client import DestinationClient
-from cloud_sdk_python.destination._models import (
+from sap_cloud_sdk.destination.client import DestinationClient
+from sap_cloud_sdk.destination._models import (
     Destination,
     Level,
     AccessStrategy,
@@ -15,8 +15,8 @@ from cloud_sdk_python.destination._models import (
     TransparentProxyDestination,
     ConsumptionOptions,
 )
-from cloud_sdk_python.destination.utils._pagination import PagedResult
-from cloud_sdk_python.destination.exceptions import (
+from sap_cloud_sdk.destination.utils._pagination import PagedResult
+from sap_cloud_sdk.destination.exceptions import (
     DestinationOperationError,
     HttpError,
 )
@@ -485,7 +485,7 @@ class TestDestinationClientReadOperations:
 class TestDestinationClientWithTransparentProxy:
     """Test suite for DestinationClient operations with transparent proxy enabled."""
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_get_instance_destination_with_proxy_enabled(self, mock_load_proxy):
         """Test get_instance_destination with proxy_enabled=True returns TransparentProxyDestination."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -504,7 +504,7 @@ class TestDestinationClientWithTransparentProxy:
         # Verify HTTP was NOT called (bypassed by proxy)
         mock_http.get.assert_not_called()
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_get_instance_destination_with_proxy_disabled(self, mock_load_proxy):
         """Test get_instance_destination with proxy_enabled=False uses normal HTTP flow."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -525,7 +525,7 @@ class TestDestinationClientWithTransparentProxy:
         # Verify HTTP was called (normal flow)
         mock_http.get.assert_called_once()
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_get_subaccount_destination_with_proxy_enabled(self, mock_load_proxy):
         """Test get_subaccount_destination with proxy_enabled=True returns TransparentProxyDestination."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -548,7 +548,7 @@ class TestDestinationClientWithTransparentProxy:
         # Verify HTTP was NOT called (bypassed by proxy)
         mock_http.get.assert_not_called()
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_get_subaccount_destination_with_proxy_disabled(self, mock_load_proxy):
         """Test get_subaccount_destination with proxy_enabled=False uses normal HTTP flow."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -588,7 +588,7 @@ class TestDestinationClientWithTransparentProxy:
             assert isinstance(result, Destination)
             mock_get.assert_called_once()
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_get_subaccount_destination_proxy_with_subscriber_strategy(self, mock_load_proxy):
         """Test get_subaccount_destination with proxy_enabled and SUBSCRIBER_FIRST strategy."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -610,7 +610,7 @@ class TestDestinationClientWithTransparentProxy:
         # Even with tenant specified, proxy bypasses HTTP call
         mock_http.get.assert_not_called()
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_client_initialization_loads_proxy(self, mock_load_proxy):
         """Test that DestinationClient initialization calls load_transparent_proxy."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -630,7 +630,7 @@ class TestDestinationClientWithTransparentProxy:
         
         assert client._transparent_proxy is None
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_transparent_proxy_destination_url_format(self, mock_load_proxy):
         """Test that TransparentProxyDestination generates correct URL format."""
         proxy = TransparentProxy(proxy_name="my-proxy", namespace="my-namespace")
@@ -644,7 +644,7 @@ class TestDestinationClientWithTransparentProxy:
         assert result.url == "http://my-proxy.my-namespace"
         assert result.headers == {"X-destination-name": "test-destination"}
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_transparent_proxy_destination_headers_format(self, mock_load_proxy):
         """Test that TransparentProxyDestination generates correct headers."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -658,7 +658,7 @@ class TestDestinationClientWithTransparentProxy:
         
         assert result.headers["X-destination-name"] == destination_name
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_get_instance_destination_default_proxy_disabled(self, mock_load_proxy):
         """Test that proxy_enabled defaults to client's use_default_proxy for get_instance_destination."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -679,7 +679,7 @@ class TestDestinationClientWithTransparentProxy:
         # HTTP should be called since proxy is disabled by default
         mock_http.get.assert_called_once()
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_get_subaccount_destination_default_proxy_disabled(self, mock_load_proxy):
         """Test that proxy_enabled defaults to client's use_default_proxy for get_subaccount_destination."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -700,7 +700,7 @@ class TestDestinationClientWithTransparentProxy:
             # _get_destination should be called since proxy is disabled by default
             mock_get.assert_called_once()
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_get_destination_with_proxy_enabled(self, mock_load_proxy):
         """Test get_destination (v2 API) with proxy_enabled=True returns TransparentProxyDestination."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -719,7 +719,7 @@ class TestDestinationClientWithTransparentProxy:
         # Verify HTTP was NOT called (bypassed by proxy)
         mock_http.get.assert_not_called()
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_get_destination_with_proxy_disabled(self, mock_load_proxy):
         """Test get_destination (v2 API) with proxy_enabled=False uses normal HTTP flow."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -749,7 +749,7 @@ class TestDestinationClientWithTransparentProxy:
         # Verify HTTP was called (normal flow)
         mock_http.get.assert_called_once()
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_get_destination_with_options_and_proxy_disabled(self, mock_load_proxy):
         """Test get_destination with ConsumptionOptions and proxy disabled."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -780,7 +780,7 @@ class TestDestinationClientWithTransparentProxy:
         assert kwargs["headers"]["X-fragment-name"] == "prod"
         assert kwargs["headers"]["X-tenant"] == "tenant-1"
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_get_destination_default_proxy_enabled(self, mock_load_proxy):
         """Test that proxy_enabled defaults to client's use_default_proxy for get_destination."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")
@@ -796,7 +796,7 @@ class TestDestinationClientWithTransparentProxy:
         # HTTP should NOT be called since proxy is enabled by default
         mock_http.get.assert_not_called()
 
-    @patch("cloud_sdk_python.destination.client.load_transparent_proxy")
+    @patch("sap_cloud_sdk.destination.client.load_transparent_proxy")
     def test_get_destination_default_proxy_disabled(self, mock_load_proxy):
         """Test that get_destination uses normal flow when proxy is disabled by default."""
         proxy = TransparentProxy(proxy_name="test-proxy", namespace="test-ns")

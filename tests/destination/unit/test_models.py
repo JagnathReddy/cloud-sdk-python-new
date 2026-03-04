@@ -4,11 +4,11 @@ from dataclasses import is_dataclass
 
 import pytest
 
-from cloud_sdk_python.destination._models import Destination, DestinationType, ProxyType, Authentication
-from cloud_sdk_python.destination._models import Fragment
-from cloud_sdk_python.destination._models import ListOptions
-from cloud_sdk_python.destination.config import DestinationConfig
-from cloud_sdk_python.destination.exceptions import DestinationOperationError
+from sap_cloud_sdk.destination._models import Destination, DestinationType, ProxyType, Authentication
+from sap_cloud_sdk.destination._models import Fragment
+from sap_cloud_sdk.destination._models import ListOptions
+from sap_cloud_sdk.destination.config import DestinationConfig
+from sap_cloud_sdk.destination.exceptions import DestinationOperationError
 
 
 class TestDestinationConfigModel:
@@ -155,77 +155,77 @@ class TestDestinationModel:
 
     def test_parse_destination_type_with_none(self):
         """Test _parse_destination_type with None returns None."""
-        from cloud_sdk_python.destination._models import _parse_destination_type
+        from sap_cloud_sdk.destination._models import _parse_destination_type
         
         result = _parse_destination_type(None)
         assert result is None
 
     def test_parse_destination_type_with_enum(self):
         """Test _parse_destination_type with enum instance."""
-        from cloud_sdk_python.destination._models import _parse_destination_type, DestinationType
+        from sap_cloud_sdk.destination._models import _parse_destination_type, DestinationType
         
         result = _parse_destination_type(DestinationType.HTTP)
         assert result == DestinationType.HTTP
 
     def test_parse_destination_type_with_string_match(self):
         """Test _parse_destination_type with matching string."""
-        from cloud_sdk_python.destination._models import _parse_destination_type, DestinationType
+        from sap_cloud_sdk.destination._models import _parse_destination_type, DestinationType
         
         result = _parse_destination_type("HTTP")
         assert result == DestinationType.HTTP
 
     def test_parse_destination_type_with_string_no_match(self):
         """Test _parse_destination_type with non-matching string."""
-        from cloud_sdk_python.destination._models import _parse_destination_type
+        from sap_cloud_sdk.destination._models import _parse_destination_type
         
         result = _parse_destination_type("CUSTOM_TYPE")
         assert result == "CUSTOM_TYPE"
 
     def test_parse_destination_type_with_invalid_type(self):
         """Test _parse_destination_type with invalid type returns None."""
-        from cloud_sdk_python.destination._models import _parse_destination_type
+        from sap_cloud_sdk.destination._models import _parse_destination_type
         
         result = _parse_destination_type(12345)
         assert result is None
 
     def test_parse_proxy_type_with_none(self):
         """Test _parse_proxy_type with None returns None."""
-        from cloud_sdk_python.destination._models import _parse_proxy_type
+        from sap_cloud_sdk.destination._models import _parse_proxy_type
         
         result = _parse_proxy_type(None)
         assert result is None
 
     def test_parse_proxy_type_with_enum(self):
         """Test _parse_proxy_type with enum instance."""
-        from cloud_sdk_python.destination._models import _parse_proxy_type, ProxyType
+        from sap_cloud_sdk.destination._models import _parse_proxy_type, ProxyType
         
         result = _parse_proxy_type(ProxyType.INTERNET)
         assert result == ProxyType.INTERNET
 
     def test_parse_proxy_type_with_string_no_match(self):
         """Test _parse_proxy_type with non-matching string."""
-        from cloud_sdk_python.destination._models import _parse_proxy_type
+        from sap_cloud_sdk.destination._models import _parse_proxy_type
         
         result = _parse_proxy_type("CustomProxy")
         assert result == "CustomProxy"
 
     def test_parse_authentication_with_none(self):
         """Test _parse_authentication with None returns None."""
-        from cloud_sdk_python.destination._models import _parse_authentication
+        from sap_cloud_sdk.destination._models import _parse_authentication
         
         result = _parse_authentication(None)
         assert result is None
 
     def test_parse_authentication_with_enum(self):
         """Test _parse_authentication with enum instance."""
-        from cloud_sdk_python.destination._models import _parse_authentication, Authentication
+        from sap_cloud_sdk.destination._models import _parse_authentication, Authentication
         
         result = _parse_authentication(Authentication.BASIC_AUTHENTICATION)
         assert result == Authentication.BASIC_AUTHENTICATION
 
     def test_parse_authentication_with_string_no_match(self):
         """Test _parse_authentication with non-matching string."""
-        from cloud_sdk_python.destination._models import _parse_authentication
+        from sap_cloud_sdk.destination._models import _parse_authentication
         
         result = _parse_authentication("CustomAuth")
         assert result == "CustomAuth"
@@ -531,12 +531,12 @@ class TestTransparentProxyDestinationModel:
     def test_transparent_proxy_destination_is_dataclass(self):
         """Test that TransparentProxyDestination is a dataclass."""
         from dataclasses import is_dataclass
-        from cloud_sdk_python.destination._models import TransparentProxyDestination
+        from sap_cloud_sdk.destination._models import TransparentProxyDestination
         assert is_dataclass(TransparentProxyDestination)
 
     def test_transparent_proxy_destination_creation(self):
         """Test creating a TransparentProxyDestination instance."""
-        from cloud_sdk_python.destination._models import TransparentProxyDestination
+        from sap_cloud_sdk.destination._models import TransparentProxyDestination
         
         dest = TransparentProxyDestination(
             name="my-dest",
@@ -550,7 +550,7 @@ class TestTransparentProxyDestinationModel:
 
     def test_transparent_proxy_destination_from_proxy(self):
         """Test creating TransparentProxyDestination from TransparentProxy."""
-        from cloud_sdk_python.destination._models import TransparentProxyDestination, TransparentProxy
+        from sap_cloud_sdk.destination._models import TransparentProxyDestination, TransparentProxy
         
         proxy = TransparentProxy(proxy_name="connectivity-proxy", namespace="my-namespace")
         dest = TransparentProxyDestination.from_proxy("my-dest", proxy)
@@ -561,7 +561,7 @@ class TestTransparentProxyDestinationModel:
 
     def test_transparent_proxy_destination_from_proxy_without_proxy_raises(self):
         """Test that from_proxy without proxy configuration raises error."""
-        from cloud_sdk_python.destination._models import TransparentProxyDestination
+        from sap_cloud_sdk.destination._models import TransparentProxyDestination
         
         with pytest.raises(DestinationOperationError) as exc_info:
             TransparentProxyDestination.from_proxy("my-dest", None)
@@ -570,7 +570,7 @@ class TestTransparentProxyDestinationModel:
 
     def test_transparent_proxy_destination_set_header(self):
         """Test setting a header using set_header method."""
-        from cloud_sdk_python.destination._models import (
+        from sap_cloud_sdk.destination._models import (
             TransparentProxyDestination,
             TransparentProxy,
             TransparentProxyHeader
@@ -587,7 +587,7 @@ class TestTransparentProxyDestinationModel:
 
     def test_transparent_proxy_destination_set_header_updates_existing(self):
         """Test that set_header updates existing header value."""
-        from cloud_sdk_python.destination._models import (
+        from sap_cloud_sdk.destination._models import (
             TransparentProxyDestination,
             TransparentProxy,
             TransparentProxyHeader
@@ -606,7 +606,7 @@ class TestTransparentProxyDestinationModel:
 
     def test_transparent_proxy_destination_set_header_with_x_destination_name(self):
         """Test setting X-destination-name header explicitly."""
-        from cloud_sdk_python.destination._models import (
+        from sap_cloud_sdk.destination._models import (
             TransparentProxyDestination,
             TransparentProxy,
             TransparentProxyHeader
@@ -622,7 +622,7 @@ class TestTransparentProxyDestinationModel:
 
     def test_transparent_proxy_header_enum_values(self):
         """Test TransparentProxyHeader enum values."""
-        from cloud_sdk_python.destination._models import TransparentProxyHeader
+        from sap_cloud_sdk.destination._models import TransparentProxyHeader
         
         assert TransparentProxyHeader.X_DESTINATION_NAME.value == "X-destination-name"
         assert TransparentProxyHeader.AUTHORIZATION.value == "Authorization"
@@ -634,12 +634,12 @@ class TestCertificateModel:
     def test_certificate_is_dataclass(self):
         """Test that Certificate is a dataclass."""
         from dataclasses import is_dataclass
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         assert is_dataclass(Certificate)
 
     def test_certificate_creation(self):
         """Test creating a Certificate instance."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         cert = Certificate(
             name="test-cert.pem",
@@ -654,7 +654,7 @@ class TestCertificateModel:
 
     def test_certificate_from_dict_basic(self):
         """Test parsing a basic certificate from dict."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         data = {
             "Name": "my-cert.pem",
@@ -670,7 +670,7 @@ class TestCertificateModel:
 
     def test_certificate_from_dict_lowercase_keys(self):
         """Test parsing certificate with lowercase keys."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         data = {
             "name": "my-cert.jks",
@@ -686,7 +686,7 @@ class TestCertificateModel:
 
     def test_certificate_from_dict_missing_name(self):
         """Test parsing certificate without name raises error."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         data = {
             "Content": "base64-content"
@@ -699,7 +699,7 @@ class TestCertificateModel:
 
     def test_certificate_from_dict_empty_name(self):
         """Test parsing certificate with empty name raises error."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         data = {
             "Name": "   ",
@@ -713,7 +713,7 @@ class TestCertificateModel:
 
     def test_certificate_from_dict_missing_content(self):
         """Test parsing certificate without content raises error."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         data = {
             "Name": "my-cert.pem"
@@ -726,7 +726,7 @@ class TestCertificateModel:
 
     def test_certificate_from_dict_empty_content(self):
         """Test parsing certificate with empty content raises error."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         data = {
             "Name": "my-cert.pem",
@@ -740,7 +740,7 @@ class TestCertificateModel:
 
     def test_certificate_from_dict_with_properties(self):
         """Test parsing certificate with additional properties."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         data = {
             "Name": "my-cert.pem",
@@ -760,7 +760,7 @@ class TestCertificateModel:
 
     def test_certificate_from_dict_filters_non_string_properties(self):
         """Test that non-string properties are not captured."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         data = {
             "Name": "my-cert.pem",
@@ -780,7 +780,7 @@ class TestCertificateModel:
 
     def test_certificate_to_dict_basic(self):
         """Test serializing a certificate to dict."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         cert = Certificate(
             name="my-cert.pem",
@@ -796,7 +796,7 @@ class TestCertificateModel:
 
     def test_certificate_to_dict_without_type(self):
         """Test serializing a certificate without type."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         cert = Certificate(
             name="my-cert.pem",
@@ -811,7 +811,7 @@ class TestCertificateModel:
 
     def test_certificate_to_dict_with_properties(self):
         """Test serializing certificate with additional properties."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         cert = Certificate(
             name="my-cert.pem",
@@ -830,7 +830,7 @@ class TestCertificateModel:
 
     def test_certificate_to_dict_properties_dont_override_known_fields(self):
         """Test that properties don't override known fields."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         cert = Certificate(
             name="my-cert.pem",
@@ -849,7 +849,7 @@ class TestCertificateModel:
 
     def test_certificate_roundtrip(self):
         """Test that from_dict and to_dict are inverse operations."""
-        from cloud_sdk_python.destination._models import Certificate
+        from sap_cloud_sdk.destination._models import Certificate
         
         original_data = {
             "Name": "test-cert.pem",

@@ -3,10 +3,10 @@
 import pytest
 from unittest.mock import MagicMock, patch
 
-from cloud_sdk_python.core.auditlog.client import AuditLogClient
-from cloud_sdk_python.core.auditlog._transport import Transport
-from cloud_sdk_python.core.auditlog.models import SecurityEvent, FailedMessage
-from cloud_sdk_python.core.auditlog.exceptions import (
+from sap_cloud_sdk.core.auditlog.client import AuditLogClient
+from sap_cloud_sdk.core.auditlog._transport import Transport
+from sap_cloud_sdk.core.auditlog.models import SecurityEvent, FailedMessage
+from sap_cloud_sdk.core.auditlog.exceptions import (
     ClientCreationError,
     TransportError
 )

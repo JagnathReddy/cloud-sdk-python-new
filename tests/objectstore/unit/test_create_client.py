@@ -3,14 +3,14 @@
 from unittest.mock import Mock, patch
 import pytest
 
-from cloud_sdk_python.objectstore import create_client
-from cloud_sdk_python.objectstore._models import ObjectStoreBindingData
+from sap_cloud_sdk.objectstore import create_client
+from sap_cloud_sdk.objectstore._models import ObjectStoreBindingData
 
 
 class TestCreateClient:
 
-    @patch('cloud_sdk_python.objectstore.read_from_mount_and_fallback_to_env_var')
-    @patch('cloud_sdk_python.objectstore.ObjectStoreClient')
+    @patch('sap_cloud_sdk.objectstore.read_from_mount_and_fallback_to_env_var')
+    @patch('sap_cloud_sdk.objectstore.ObjectStoreClient')
     def test_create_client_cloud_mode(self, mock_client_class, mock_resolver):
         mock_client = Mock()
         mock_client_class.return_value = mock_client
@@ -37,7 +37,7 @@ class TestCreateClient:
             create_client(None)  # type: ignore
 
 
-    @patch('cloud_sdk_python.objectstore.ObjectStoreClient')
+    @patch('sap_cloud_sdk.objectstore.ObjectStoreClient')
     def test_create_client_with_explicit_config(self, mock_client_class):
         """Test that create_client uses explicit config when provided."""
         mock_config = ObjectStoreBindingData(

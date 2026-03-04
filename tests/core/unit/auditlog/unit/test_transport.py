@@ -3,9 +3,9 @@
 import pytest
 from abc import ABC
 
-from cloud_sdk_python.core.auditlog._transport import Transport, AuditMessage
-from cloud_sdk_python.core.auditlog.models import SecurityEvent, DataAccessEvent
-from cloud_sdk_python.core.auditlog.exceptions import TransportError
+from sap_cloud_sdk.core.auditlog._transport import Transport, AuditMessage
+from sap_cloud_sdk.core.auditlog.models import SecurityEvent, DataAccessEvent
+from sap_cloud_sdk.core.auditlog.exceptions import TransportError
 
 
 class TestTransport:

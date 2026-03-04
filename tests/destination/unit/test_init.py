@@ -3,19 +3,19 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from cloud_sdk_python.destination import create_client, create_fragment_client, create_certificate_client
-from cloud_sdk_python.destination.client import DestinationClient
-from cloud_sdk_python.destination.fragment_client import FragmentClient
-from cloud_sdk_python.destination.certificate_client import CertificateClient
-from cloud_sdk_python.destination.config import DestinationConfig
-from cloud_sdk_python.destination.exceptions import ClientCreationError
+from sap_cloud_sdk.destination import create_client, create_fragment_client, create_certificate_client
+from sap_cloud_sdk.destination.client import DestinationClient
+from sap_cloud_sdk.destination.fragment_client import FragmentClient
+from sap_cloud_sdk.destination.certificate_client import CertificateClient
+from sap_cloud_sdk.destination.config import DestinationConfig
+from sap_cloud_sdk.destination.exceptions import ClientCreationError
 
 
 class TestCreateClient:
     """Tests for create_client factory function."""
 
-    @patch("cloud_sdk_python.destination.TokenProvider")
-    @patch("cloud_sdk_python.destination.DestinationHttp")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.DestinationHttp")
     def test_create_client_with_explicit_config(self, mock_http, mock_token_provider):
         """Test creating client with explicit configuration."""
         config = DestinationConfig(
@@ -38,9 +38,9 @@ class TestCreateClient:
         mock_token_provider.assert_called_once_with(config)
         mock_http.assert_called_once_with(config=config, token_provider=mock_tp)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
-    @patch("cloud_sdk_python.destination.TokenProvider")
-    @patch("cloud_sdk_python.destination.DestinationHttp")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.DestinationHttp")
     def test_create_client_cloud_mode_default(self, mock_http, mock_token_provider, mock_load_config):
         """Test creating client in cloud mode with default configuration."""
 
@@ -60,9 +60,9 @@ class TestCreateClient:
         mock_token_provider.assert_called_once_with(mock_config)
         mock_http.assert_called_once_with(config=mock_config, token_provider=mock_tp)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
-    @patch("cloud_sdk_python.destination.TokenProvider")
-    @patch("cloud_sdk_python.destination.DestinationHttp")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.DestinationHttp")
     def test_create_client_cloud_mode_with_instance_name(self, mock_http, mock_token_provider, mock_load_config):
         """Test creating client in cloud mode with custom instance name."""
         mock_config = Mock(spec=DestinationConfig)
@@ -81,7 +81,7 @@ class TestCreateClient:
         mock_token_provider.assert_called_once_with(mock_config)
         mock_http.assert_called_once_with(config=mock_config, token_provider=mock_tp)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
     def test_create_client_config_error(self, mock_load_config):
         """Test that configuration errors are wrapped in ClientCreationError."""
         mock_load_config.side_effect = Exception("Config loading failed")
@@ -93,8 +93,8 @@ class TestCreateClient:
         assert "failed to create destination client" in str(exc_info.value)
         assert "Config loading failed" in str(exc_info.value)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
-    @patch("cloud_sdk_python.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
     def test_create_client_token_provider_error(self, mock_token_provider, mock_load_config):
         """Test that token provider errors are wrapped in ClientCreationError."""
         mock_config = Mock(spec=DestinationConfig)
@@ -108,9 +108,9 @@ class TestCreateClient:
         assert "failed to create destination client" in str(exc_info.value)
         assert "Token provider failed" in str(exc_info.value)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
-    @patch("cloud_sdk_python.destination.TokenProvider")
-    @patch("cloud_sdk_python.destination.DestinationHttp")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.DestinationHttp")
     def test_create_client_http_error(self, mock_http, mock_token_provider, mock_load_config):
         """Test that HTTP client errors are wrapped in ClientCreationError."""
         mock_config = Mock(spec=DestinationConfig)
@@ -130,9 +130,9 @@ class TestCreateClient:
 class TestCreateFragmentClient:
     """Tests for create_fragment_client factory function."""
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
-    @patch("cloud_sdk_python.destination.TokenProvider")
-    @patch("cloud_sdk_python.destination.DestinationHttp")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.DestinationHttp")
     def test_create_fragment_client_default(self, mock_http, mock_token_provider, mock_load_config):
         """Test creating fragment client with default configuration."""
         # Setup mocks
@@ -152,8 +152,8 @@ class TestCreateFragmentClient:
         mock_token_provider.assert_called_once_with(mock_config)
         mock_http.assert_called_once_with(config=mock_config, token_provider=mock_tp)
 
-    @patch("cloud_sdk_python.destination.TokenProvider")
-    @patch("cloud_sdk_python.destination.DestinationHttp")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.DestinationHttp")
     def test_create_fragment_client_with_explicit_config(self, mock_http, mock_token_provider):
         """Test creating fragment client with explicit configuration."""
         # Setup
@@ -177,9 +177,9 @@ class TestCreateFragmentClient:
         mock_token_provider.assert_called_once_with(config)
         mock_http.assert_called_once_with(config=config, token_provider=mock_tp)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
-    @patch("cloud_sdk_python.destination.TokenProvider")
-    @patch("cloud_sdk_python.destination.DestinationHttp")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.DestinationHttp")
     def test_create_fragment_client_with_instance_name(self, mock_http, mock_token_provider, mock_load_config):
         """Test creating fragment client with custom instance name."""
         # Setup mocks
@@ -199,7 +199,7 @@ class TestCreateFragmentClient:
         mock_token_provider.assert_called_once_with(mock_config)
         mock_http.assert_called_once_with(config=mock_config, token_provider=mock_tp)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
     def test_create_fragment_client_config_error(self, mock_load_config):
         """Test that configuration errors are wrapped in ClientCreationError."""
         # Setup
@@ -212,8 +212,8 @@ class TestCreateFragmentClient:
         assert "failed to create fragment client" in str(exc_info.value)
         assert "Config loading failed" in str(exc_info.value)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
-    @patch("cloud_sdk_python.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
     def test_create_fragment_client_token_provider_error(self, mock_token_provider, mock_load_config):
         """Test that token provider errors are wrapped in ClientCreationError."""
         # Setup
@@ -228,9 +228,9 @@ class TestCreateFragmentClient:
         assert "failed to create fragment client" in str(exc_info.value)
         assert "Token provider failed" in str(exc_info.value)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
-    @patch("cloud_sdk_python.destination.TokenProvider")
-    @patch("cloud_sdk_python.destination.DestinationHttp")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.DestinationHttp")
     def test_create_fragment_client_http_error(self, mock_http, mock_token_provider, mock_load_config):
         """Test that HTTP client errors are wrapped in ClientCreationError."""
         # Setup
@@ -251,8 +251,8 @@ class TestCreateFragmentClient:
 class TestCreateCertificateClient:
     """Tests for create_certificate_client factory function."""
 
-    @patch("cloud_sdk_python.destination.TokenProvider")
-    @patch("cloud_sdk_python.destination.DestinationHttp")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.DestinationHttp")
     def test_create_certificate_client_with_explicit_config(self, mock_http, mock_token_provider):
         """Test creating certificate client with explicit configuration."""
 
@@ -276,9 +276,9 @@ class TestCreateCertificateClient:
         mock_token_provider.assert_called_once_with(config)
         mock_http.assert_called_once_with(config=config, token_provider=mock_tp)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
-    @patch("cloud_sdk_python.destination.TokenProvider")
-    @patch("cloud_sdk_python.destination.DestinationHttp")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.DestinationHttp")
     def test_create_certificate_client_cloud_mode_default(self, mock_http, mock_token_provider, mock_load_config):
         """Test creating certificate client in cloud mode with default configuration."""
         mock_config = Mock(spec=DestinationConfig)
@@ -297,9 +297,9 @@ class TestCreateCertificateClient:
         mock_token_provider.assert_called_once_with(mock_config)
         mock_http.assert_called_once_with(config=mock_config, token_provider=mock_tp)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
-    @patch("cloud_sdk_python.destination.TokenProvider")
-    @patch("cloud_sdk_python.destination.DestinationHttp")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.DestinationHttp")
     def test_create_certificate_client_cloud_mode_with_instance_name(self, mock_http, mock_token_provider, mock_load_config):
         """Test creating certificate client in cloud mode with custom instance name."""
 
@@ -319,7 +319,7 @@ class TestCreateCertificateClient:
         mock_token_provider.assert_called_once_with(mock_config)
         mock_http.assert_called_once_with(config=mock_config, token_provider=mock_tp)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
     def test_create_certificate_client_config_error(self, mock_load_config):
         """Test that configuration errors are wrapped in ClientCreationError."""
 
@@ -332,8 +332,8 @@ class TestCreateCertificateClient:
         assert "failed to create certificate client" in str(exc_info.value)
         assert "Config loading failed" in str(exc_info.value)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
-    @patch("cloud_sdk_python.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
     def test_create_certificate_client_token_provider_error(self, mock_token_provider, mock_load_config):
         """Test that token provider errors are wrapped in ClientCreationError."""
 
@@ -348,9 +348,9 @@ class TestCreateCertificateClient:
         assert "failed to create certificate client" in str(exc_info.value)
         assert "Token provider failed" in str(exc_info.value)
 
-    @patch("cloud_sdk_python.destination.load_from_env_or_mount")
-    @patch("cloud_sdk_python.destination.TokenProvider")
-    @patch("cloud_sdk_python.destination.DestinationHttp")
+    @patch("sap_cloud_sdk.destination.load_from_env_or_mount")
+    @patch("sap_cloud_sdk.destination.TokenProvider")
+    @patch("sap_cloud_sdk.destination.DestinationHttp")
     def test_create_certificate_client_http_error(self, mock_http, mock_token_provider, mock_load_config):
         """Test that HTTP client errors are wrapped in ClientCreationError."""
 

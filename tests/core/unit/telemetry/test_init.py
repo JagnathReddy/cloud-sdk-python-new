@@ -8,7 +8,7 @@ class TestTelemetryExports:
 
     def test_module_exports(self):
         """Test that all public APIs are exported from __init__.py."""
-        from cloud_sdk_python.core import telemetry
+        from sap_cloud_sdk.core import telemetry
         
         # Core functions
         assert hasattr(telemetry, 'record_request_metric')
@@ -33,7 +33,7 @@ class TestTelemetryExports:
 
     def test_all_exports_in_all(self):
         """Test that __all__ contains expected exports."""
-        from cloud_sdk_python.core.telemetry import __all__
+        from sap_cloud_sdk.core.telemetry import __all__
         
         expected_exports = [
             'Module',
@@ -55,7 +55,7 @@ class TestTelemetryExports:
     def test_imports_work(self):
         """Test that imports work correctly."""
         # Test direct imports
-        from cloud_sdk_python.core.telemetry import (
+        from sap_cloud_sdk.core.telemetry import (
             record_request_metric,
             record_error_metric,
             record_aicore_metric,
@@ -93,7 +93,7 @@ class TestTelemetryExports:
         test_module = type(sys)('test_telemetry_import')
         
         # Execute star import in the test module's namespace
-        exec('from cloud_sdk_python.core.telemetry import *', test_module.__dict__)
+        exec('from sap_cloud_sdk.core.telemetry import *', test_module.__dict__)
         
         # Check expected exports are available
         assert 'Module' in test_module.__dict__
@@ -110,7 +110,7 @@ class TestTelemetryExports:
 
     def test_module_has_docstring(self):
         """Test that module has documentation."""
-        from cloud_sdk_python.core import telemetry
+        from sap_cloud_sdk.core import telemetry
         
         assert telemetry.__doc__ is not None
         assert len(telemetry.__doc__) > 0
@@ -118,7 +118,7 @@ class TestTelemetryExports:
 
     def test_no_private_exports(self):
         """Test that private names are not exported in __all__."""
-        from cloud_sdk_python.core.telemetry import __all__
+        from sap_cloud_sdk.core.telemetry import __all__
         
         # __all__ should not contain private names (starting with _)
         for name in __all__:

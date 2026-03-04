@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 import pytest
 import uuid
 
-from cloud_sdk_python.core.auditlog.models import (
+from sap_cloud_sdk.core.auditlog.models import (
     Tenant,
     _BaseAuditEvent,
     SecurityEvent,

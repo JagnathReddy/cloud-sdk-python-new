@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, Mock, mock_open, patch
 
 import pytest
 
-from cloud_sdk_python.aicore import (
+from sap_cloud_sdk.aicore import (
     _get_aicore_base_url,
     _get_secret,
     set_aicore_config,
@@ -142,7 +142,7 @@ class TestGetSecret:
         with patch("os.path.exists", return_value=True), patch(
             "builtins.open", mock_open(read_data=mock_file_content)
         ), patch.dict("os.environ", {}, clear=True), patch(
-            "cloud_sdk_python.aicore.logger"
+            "sap_cloud_sdk.aicore.logger"
         ) as mock_logger:
             _get_secret(env_var_name)
 
@@ -158,7 +158,7 @@ class TestGetSecret:
         with patch("os.path.exists", return_value=True), patch(
             "builtins.open", side_effect=IOError("Permission denied")
         ), patch.dict("os.environ", {}, clear=True), patch(
-            "cloud_sdk_python.aicore.logger"
+            "sap_cloud_sdk.aicore.logger"
         ) as mock_logger:
             _get_secret(env_var_name)
 
@@ -171,7 +171,7 @@ class TestGetSecret:
 
         with patch("os.path.exists", return_value=False), patch.dict(
             "os.environ", {env_var_name: env_value}, clear=True
-        ), patch("cloud_sdk_python.aicore.logger") as mock_logger:
+        ), patch("sap_cloud_sdk.aicore.logger") as mock_logger:
             _get_secret(env_var_name)
 
             mock_logger.info.assert_called()
@@ -182,7 +182,7 @@ class TestGetSecret:
 
         with patch("os.path.exists", return_value=False), patch.dict(
             "os.environ", {}, clear=True
-        ), patch("cloud_sdk_python.aicore.logger") as mock_logger:
+        ), patch("sap_cloud_sdk.aicore.logger") as mock_logger:
             _get_secret(env_var_name)
 
             mock_logger.warning.assert_called()
@@ -304,7 +304,7 @@ class TestGetAICoreBaseUrl:
         with patch("os.path.exists", return_value=True), patch(
             "builtins.open", mock_open(read_data=mock_file_content)
         ), patch.dict("os.environ", {}, clear=True), patch(
-            "cloud_sdk_python.aicore.logger"
+            "sap_cloud_sdk.aicore.logger"
         ) as mock_logger:
             _get_aicore_base_url()
 
@@ -315,7 +315,7 @@ class TestGetAICoreBaseUrl:
         with patch("os.path.exists", return_value=True), patch(
             "builtins.open", side_effect=IOError("Permission denied")
         ), patch.dict("os.environ", {}, clear=True), patch(
-            "cloud_sdk_python.aicore.logger"
+            "sap_cloud_sdk.aicore.logger"
         ) as mock_logger:
             _get_aicore_base_url()
 
@@ -327,7 +327,7 @@ class TestGetAICoreBaseUrl:
 
         with patch("os.path.exists", return_value=False), patch.dict(
             "os.environ", {"AICORE_BASE_URL": env_value}
-        ), patch("cloud_sdk_python.aicore.logger") as mock_logger:
+        ), patch("sap_cloud_sdk.aicore.logger") as mock_logger:
             _get_aicore_base_url()
 
             mock_logger.info.assert_called()
@@ -336,7 +336,7 @@ class TestGetAICoreBaseUrl:
         """Test that warning is logged when no value is found."""
         with patch("os.path.exists", return_value=False), patch.dict(
             "os.environ", {}, clear=True
-        ), patch("cloud_sdk_python.aicore.logger") as mock_logger:
+        ), patch("sap_cloud_sdk.aicore.logger") as mock_logger:
             _get_aicore_base_url()
 
             mock_logger.warning.assert_called()
@@ -347,8 +347,8 @@ class TestSetAICoreConfig:
 
     def test_set_config_loads_all_secrets_successfully(self):
         """Test successfully loading and setting all AI Core configuration."""
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True):
             # Setup mock returns
             mock_get_secret.side_effect = lambda name, file_name=None, default="", instance_name="aicore-instance": {
@@ -372,8 +372,8 @@ class TestSetAICoreConfig:
 
     def test_set_config_appends_oauth_token_suffix(self):
         """Test that /oauth/token suffix is appended to auth URL."""
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True):
             mock_get_secret.side_effect = lambda name, file_name=None, default="", instance_name="aicore-instance": {
                 "AICORE_CLIENT_ID": "test-client-id",
@@ -391,8 +391,8 @@ class TestSetAICoreConfig:
 
     def test_set_config_does_not_duplicate_oauth_token_suffix(self):
         """Test that /oauth/token suffix is not duplicated if already present."""
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True):
             mock_get_secret.side_effect = lambda name, file_name=None, default="", instance_name="aicore-instance": {
                 "AICORE_CLIENT_ID": "test-client-id",
@@ -410,8 +410,8 @@ class TestSetAICoreConfig:
 
     def test_set_config_strips_trailing_slash_before_adding_oauth_token(self):
         """Test that trailing slash is removed before appending /oauth/token."""
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True):
             mock_get_secret.side_effect = lambda name, file_name=None, default="", instance_name="aicore-instance": {
                 "AICORE_CLIENT_ID": "test-client-id",
@@ -429,8 +429,8 @@ class TestSetAICoreConfig:
 
     def test_set_config_appends_v2_suffix_to_base_url(self):
         """Test that /v2 suffix is appended to base URL."""
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True):
             mock_get_secret.side_effect = lambda name, file_name=None, default="", instance_name="aicore-instance": {
                 "AICORE_CLIENT_ID": "test-client-id",
@@ -446,8 +446,8 @@ class TestSetAICoreConfig:
 
     def test_set_config_does_not_duplicate_v2_suffix(self):
         """Test that /v2 suffix is not duplicated if already present."""
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True):
             mock_get_secret.side_effect = lambda name, file_name=None, default="", instance_name="aicore-instance": {
                 "AICORE_CLIENT_ID": "test-client-id",
@@ -463,8 +463,8 @@ class TestSetAICoreConfig:
 
     def test_set_config_strips_trailing_slash_before_adding_v2(self):
         """Test that trailing slash is removed before appending /v2."""
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True):
             mock_get_secret.side_effect = lambda name, file_name=None, default="", instance_name="aicore-instance": {
                 "AICORE_CLIENT_ID": "test-client-id",
@@ -480,8 +480,8 @@ class TestSetAICoreConfig:
 
     def test_set_config_does_not_set_empty_values(self):
         """Test that empty values are not set as environment variables."""
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True):
             mock_get_secret.side_effect = lambda name, file_name=None, default="", instance_name="aicore-instance": {
                 "AICORE_CLIENT_ID": "",
@@ -502,8 +502,8 @@ class TestSetAICoreConfig:
 
     def test_set_config_uses_default_resource_group(self):
         """Test that default resource group is used when not provided."""
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True):
             mock_get_secret.side_effect = lambda name, file_name=None, default="", instance_name="aicore-instance": (
                 default if name == "AICORE_RESOURCE_GROUP" else ""
@@ -518,8 +518,8 @@ class TestSetAICoreConfig:
         """Test using custom instance_name parameter."""
         instance_name = "custom-instance"
 
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True):
             mock_get_secret.return_value = ""
             mock_get_base_url.return_value = ""
@@ -534,8 +534,8 @@ class TestSetAICoreConfig:
 
     def test_set_config_calls_get_secret_with_correct_parameters(self):
         """Test that _get_secret is called with correct parameters for each secret."""
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True):
             mock_get_secret.return_value = ""
             mock_get_base_url.return_value = ""
@@ -562,10 +562,10 @@ class TestSetAICoreConfig:
 
     def test_set_config_logs_configuration(self):
         """Test that configuration is logged (excluding sensitive information)."""
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True), patch(
-            "cloud_sdk_python.aicore.logger"
+            "sap_cloud_sdk.aicore.logger"
         ) as mock_logger:
             mock_get_secret.side_effect = lambda name, file_name=None, default="", instance_name="aicore-instance": {
                 "AICORE_CLIENT_ID": "test-client-id",
@@ -590,10 +590,10 @@ class TestSetAICoreConfig:
 
     def test_set_config_decorated_with_record_metrics(self):
         """Test that set_aicore_config is decorated with @record_metrics."""
-        with patch("cloud_sdk_python.aicore._get_secret") as mock_get_secret, patch(
-            "cloud_sdk_python.aicore._get_aicore_base_url"
+        with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
+            "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True), patch(
-            "cloud_sdk_python.core.telemetry.metrics_decorator.record_metrics",
+            "sap_cloud_sdk.core.telemetry.metrics_decorator.record_metrics",
             wraps=lambda module, operation: lambda func: func,
         ):
             mock_get_secret.return_value = ""

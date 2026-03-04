@@ -2,7 +2,7 @@
 
 import pytest
 
-from cloud_sdk_python.objectstore.exceptions import (
+from sap_cloud_sdk.objectstore.exceptions import (
     ObjectStoreError,
     ClientCreationError,
     ObjectOperationError,

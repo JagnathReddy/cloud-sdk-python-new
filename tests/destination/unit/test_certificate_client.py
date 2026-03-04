@@ -4,10 +4,10 @@ import pytest
 from unittest.mock import Mock
 from requests import Response
 
-from cloud_sdk_python.destination.certificate_client import CertificateClient
-from cloud_sdk_python.destination._models import AccessStrategy, Certificate, Level, ListOptions
-from cloud_sdk_python.destination.utils._pagination import PagedResult
-from cloud_sdk_python.destination.exceptions import (
+from sap_cloud_sdk.destination.certificate_client import CertificateClient
+from sap_cloud_sdk.destination._models import AccessStrategy, Certificate, Level, ListOptions
+from sap_cloud_sdk.destination.utils._pagination import PagedResult
+from sap_cloud_sdk.destination.exceptions import (
     DestinationOperationError,
     HttpError,
 )
@@ -721,7 +721,7 @@ class TestCertificateClientEdgeCases:
         mock_http.get.return_value = mock_response
         
         # Patch AccessStrategy to add an unknown value
-        with patch('cloud_sdk_python.destination.certificate_client.AccessStrategy') as mock_strategy:
+        with patch('sap_cloud_sdk.destination.certificate_client.AccessStrategy') as mock_strategy:
             unknown_strategy = Mock()
             unknown_strategy.value = "UNKNOWN_STRATEGY"
             

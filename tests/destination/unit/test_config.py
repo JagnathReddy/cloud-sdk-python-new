@@ -3,15 +3,15 @@
 import pytest
 from unittest.mock import patch, MagicMock
 
-from cloud_sdk_python.destination.config import (
+from sap_cloud_sdk.destination.config import (
     BindingData,
     load_from_env_or_mount,
     load_transparent_proxy,
     _TRANSPARENT_PROXY_ENV_VAR,
 )
-from cloud_sdk_python.destination.config import DestinationConfig
-from cloud_sdk_python.destination._models import TransparentProxy
-from cloud_sdk_python.destination.exceptions import ConfigError
+from sap_cloud_sdk.destination.config import DestinationConfig
+from sap_cloud_sdk.destination._models import TransparentProxy
+from sap_cloud_sdk.destination.exceptions import ConfigError
 
 
 class TestBindingData:
@@ -102,7 +102,7 @@ class TestBindingData:
 
 class TestLoadFromEnvOrMount:
 
-    @patch("cloud_sdk_python.destination.config.read_from_mount_and_fallback_to_env_var")
+    @patch("sap_cloud_sdk.destination.config.read_from_mount_and_fallback_to_env_var")
     def test_load_success_default_instance(self, mock_read):
         def fake_read_side_effect(*args, **kwargs):
             target = kwargs.get("target")
@@ -132,7 +132,7 @@ class TestLoadFromEnvOrMount:
         assert kwargs["instance"] == "default"
         assert isinstance(kwargs["target"], BindingData)
 
-    @patch("cloud_sdk_python.destination.config.read_from_mount_and_fallback_to_env_var")
+    @patch("sap_cloud_sdk.destination.config.read_from_mount_and_fallback_to_env_var")
     def test_load_success_custom_instance(self, mock_read):
         def fake_read_side_effect(*args, **kwargs):
             target = kwargs.get("target")
@@ -148,7 +148,7 @@ class TestLoadFromEnvOrMount:
         assert isinstance(sb, DestinationConfig)
         assert mock_read.call_args[1]["instance"] == "custom"
 
-    @patch("cloud_sdk_python.destination.config.read_from_mount_and_fallback_to_env_var")
+    @patch("sap_cloud_sdk.destination.config.read_from_mount_and_fallback_to_env_var")
     def test_load_validation_error_propagates_as_config_error(self, mock_read):
         def fake_read_side_effect(*args, **kwargs):
             target = kwargs.get("target")
@@ -163,13 +163,13 @@ class TestLoadFromEnvOrMount:
         with pytest.raises(ConfigError, match="failed to load destination configuration"):
             load_from_env_or_mount()
 
-    @patch("cloud_sdk_python.destination.config.read_from_mount_and_fallback_to_env_var")
+    @patch("sap_cloud_sdk.destination.config.read_from_mount_and_fallback_to_env_var")
     def test_load_read_exception_wrapped(self, mock_read):
         mock_read.side_effect = Exception("Mount read failed")
         with pytest.raises(ConfigError, match="failed to load destination configuration"):
             load_from_env_or_mount()
 
-    @patch("cloud_sdk_python.destination.config.read_from_mount_and_fallback_to_env_var")
+    @patch("sap_cloud_sdk.destination.config.read_from_mount_and_fallback_to_env_var")
     def test_load_error_message_contains_guidance(self, mock_read):
         # Simulate aggregated failure inside the resolver (mount + env fallback) with resolver-style message
         mock_read.side_effect = RuntimeError(

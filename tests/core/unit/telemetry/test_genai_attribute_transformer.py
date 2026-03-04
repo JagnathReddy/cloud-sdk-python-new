@@ -7,7 +7,7 @@ from typing import MutableMapping, Any
 
 from opentelemetry.sdk.trace.export import SpanExportResult
 
-from cloud_sdk_python.core.telemetry.genai_attribute_transformer import GenAIAttributeTransformer
+from sap_cloud_sdk.core.telemetry.genai_attribute_transformer import GenAIAttributeTransformer
 
 
 def create_mock_span(attributes: dict, name: str = "test_span") -> MagicMock:

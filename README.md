@@ -8,11 +8,11 @@ The Python SDK offers a clean, type-safe API following Python best practices whi
 
 ## Available Modules
 
-- [AuditLog User Guide](../src/cloud_sdk_python/core/auditlog/user-guide.md) - Compliance audit logging for SAP Audit Log Service
-- [Destination User Guide](../src/cloud_sdk_python/destination/user-guide.md) - SAP BTP Destination Service integration with proxy support
-- [ObjectStore User Guide](../src/cloud_sdk_python/objectstore/user-guide.md) - S3-compatible object storage
-- [Secret Resolver User Guide](../src/cloud_sdk_python/core/secret_resolver/user-guide.md) - Secure credential management from mounted volumes and environment variables
-- [Telemetry User Guide](../src/cloud_sdk_python/core/telemetry/user-guide.md) - OpenTelemetry tracing and GenAI auto-instrumentation
+- [AuditLog User Guide](../src/sap_cloud_sdk/core/auditlog/user-guide.md) - Compliance audit logging for SAP Audit Log Service
+- [Destination User Guide](../src/sap_cloud_sdk/destination/user-guide.md) - SAP BTP Destination Service integration with proxy support
+- [ObjectStore User Guide](../src/sap_cloud_sdk/objectstore/user-guide.md) - S3-compatible object storage
+- [Secret Resolver User Guide](../src/sap_cloud_sdk/core/secret_resolver/user-guide.md) - Secure credential management from mounted volumes and environment variables
+- [Telemetry User Guide](../src/sap_cloud_sdk/core/telemetry/user-guide.md) - OpenTelemetry tracing and GenAI auto-instrumentation
 
 ---
 
@@ -25,7 +25,7 @@ TODO: To be defined
 ## Quick Start
 
 ```python
-from cloud_sdk_python.objectstore import create_client
+from sap_cloud_sdk.objectstore import create_client
 
 # Create an ObjectStore client (auto-detects local vs cloud)
 client = create_client("my-instance")
@@ -99,7 +99,7 @@ export OTEL_EXPORTER_OTLP_ENDPOINT="https://otel-collector.example.com"
 ### Audit Logging
 
 ```python
-from cloud_sdk_python.core.auditlog import (create_client, SecurityEvent)
+from sap_cloud_sdk.core.auditlog import (create_client, SecurityEvent)
 
 # Create client )
 client = create_client()
@@ -125,7 +125,7 @@ Securely load configuration and credentials from Kubernetes mounted volumes or e
 
 ```python
 from dataclasses import dataclass, field
-from cloud_sdk_python.core.secret_resolver import read_from_mount_and_fallback_to_env_var
+from sap_cloud_sdk.core.secret_resolver import read_from_mount_and_fallback_to_env_var
 
 # Load configuration
 config = DatabaseConfig()
@@ -143,7 +143,7 @@ read_from_mount_and_fallback_to_env_var(
 Comprehensive telemetry and observability for AI applications with automatic instrumentation:
 
 ```python
-from cloud_sdk_python.core.telemetry import (
+from sap_cloud_sdk.core.telemetry import (
     auto_instrument, context_overlay, GenAIOperation,
     chat_span, execute_tool_span, invoke_agent_span,
     record_metrics, set_tenant_id, add_span_attribute

@@ -3,9 +3,9 @@
 import pytest
 from unittest.mock import patch
 
-from cloud_sdk_python.core.telemetry.metrics_decorator import record_metrics
-from cloud_sdk_python.core.telemetry.module import Module
-from cloud_sdk_python.core.telemetry.operation import Operation
+from sap_cloud_sdk.core.telemetry.metrics_decorator import record_metrics
+from sap_cloud_sdk.core.telemetry.module import Module
+from sap_cloud_sdk.core.telemetry.operation import Operation
 
 
 class TestRecordMetricsDecorator:
@@ -40,7 +40,7 @@ class TestRecordMetricsDecorator:
         
         client = TestClient()
         
-        with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_request_metric') as mock_metric:
+        with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_request_metric') as mock_metric:
             client.test_method()
             
             # Verify it was called with None as source
@@ -64,7 +64,7 @@ class TestRecordMetricsDecorator:
         
         client = TestClient()
         
-        with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_request_metric') as mock_metric:
+        with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_request_metric') as mock_metric:
             client.test_method()
             
             # Verify it was called with Module.OBJECTSTORE as source
@@ -87,7 +87,7 @@ class TestRecordMetricsDecorator:
         
         client = TestClient()
         
-        with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_request_metric') as mock_metric:
+        with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_request_metric') as mock_metric:
             result = client.test_method()
             
             assert result == "called"
@@ -112,7 +112,7 @@ class TestRecordMetricsDecorator:
         
         client = TestClient()
         
-        with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_error_metric') as mock_error:
+        with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_error_metric') as mock_error:
             with pytest.raises(ValueError, match="Test error"):
                 client.failing_method()
             
@@ -137,7 +137,7 @@ class TestRecordMetricsDecorator:
         
         client = TestClient()
         
-        with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_error_metric') as mock_error:
+        with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_error_metric') as mock_error:
             with pytest.raises(RuntimeError, match="Test error"):
                 client.failing_method()
             
@@ -162,7 +162,7 @@ class TestRecordMetricsDecorator:
         
         client = TestClient()
         
-        with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_error_metric'):
+        with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_error_metric'):
             with pytest.raises(ValueError, match="Original error"):
                 client.failing_method()
 
@@ -179,7 +179,7 @@ class TestRecordMetricsDecorator:
         
         client = TestClient()
         
-        with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_request_metric'):
+        with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_request_metric'):
             result = client.method_with_return()
             
             assert result == {"status": "uploaded", "size": 1024}
@@ -197,7 +197,7 @@ class TestRecordMetricsDecorator:
         
         client = TestClient()
         
-        with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_request_metric'):
+        with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_request_metric'):
             result = client.method_with_params("dest", "prod", level="subaccount")
             
             assert result == "dest-prod-subaccount"
@@ -215,7 +215,7 @@ class TestRecordMetricsDecorator:
         
         client = TestClient()
         
-        with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_request_metric'):
+        with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_request_metric'):
             result = client.method_with_kwargs(events=[1, 2, 3], batch_size=10)
             
             assert result == {"events": [1, 2, 3], "batch_size": 10}
@@ -239,7 +239,7 @@ class TestRecordMetricsDecorator:
         def mock_record(*args):
             execution_order.append("metric")
         
-        with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_request_metric', side_effect=mock_record):
+        with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_request_metric', side_effect=mock_record):
             client.test_method()
             
             assert execution_order == ["function", "metric"]
@@ -257,7 +257,7 @@ class TestRecordMetricsDecorator:
         
         client = TestClient()
         
-        with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_request_metric') as mock_metric:
+        with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_request_metric') as mock_metric:
             client.delete_operation()
             
             call_args = mock_metric.call_args[0]
@@ -284,7 +284,7 @@ class TestRecordMetricsDecorator:
             
             client = TestClient(source_value)
             
-            with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_request_metric') as mock_metric:
+            with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_request_metric') as mock_metric:
                 client.test_method()
                 
                 call_args = mock_metric.call_args[0]
@@ -299,7 +299,7 @@ class TestRecordMetricsDecorator:
             def static_method():
                 return "static"
         
-        with patch('cloud_sdk_python.core.telemetry.metrics_decorator.record_request_metric') as mock_metric:
+        with patch('sap_cloud_sdk.core.telemetry.metrics_decorator.record_request_metric') as mock_metric:
             result = TestClient.static_method()
             
             assert result == "static"

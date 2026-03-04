@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 from dotenv import load_dotenv
 
-from cloud_sdk_python.core.auditlog import create_client
-from cloud_sdk_python.core.auditlog import AuditLogConfig
+from sap_cloud_sdk.core.auditlog import create_client
+from sap_cloud_sdk.core.auditlog import AuditLogConfig
 
 @pytest.fixture(scope="session")
 def auditlog_client():

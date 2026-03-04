@@ -2,7 +2,7 @@
 
 import pytest
 
-from cloud_sdk_python.core.telemetry.genai_operation import GenAIOperation
+from sap_cloud_sdk.core.telemetry.genai_operation import GenAIOperation
 
 
 class TestGenAIOperation:

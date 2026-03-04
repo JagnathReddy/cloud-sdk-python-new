@@ -3,12 +3,12 @@
 import pytest
 from unittest.mock import patch, MagicMock
 
-from cloud_sdk_python.core.telemetry._provider import (
+from sap_cloud_sdk.core.telemetry._provider import (
     get_meter,
     shutdown,
     _setup_meter_provider,
 )
-from cloud_sdk_python.core.telemetry.config import InstrumentationConfig
+from sap_cloud_sdk.core.telemetry.config import InstrumentationConfig
 
 
 class TestGetMeter:
@@ -16,13 +16,13 @@ class TestGetMeter:
 
     def test_get_meter_returns_meter(self):
         """Test that get_meter returns a meter instance."""
-        import cloud_sdk_python.core.telemetry._provider as provider_module
+        import sap_cloud_sdk.core.telemetry._provider as provider_module
         
         # Reset global state
         provider_module._meter_provider = None
         provider_module._meter = None
         
-        with patch('cloud_sdk_python.core.telemetry._provider._setup_meter_provider') as mock_setup:
+        with patch('sap_cloud_sdk.core.telemetry._provider._setup_meter_provider') as mock_setup:
             mock_provider = MagicMock()
             mock_setup.return_value = mock_provider
             
@@ -37,13 +37,13 @@ class TestGetMeter:
 
     def test_get_meter_returns_singleton(self):
         """Test that get_meter returns the same meter instance."""
-        import cloud_sdk_python.core.telemetry._provider as provider_module
+        import sap_cloud_sdk.core.telemetry._provider as provider_module
         
         # Reset global state
         provider_module._meter_provider = None
         provider_module._meter = None
         
-        with patch('cloud_sdk_python.core.telemetry._provider._setup_meter_provider') as mock_setup:
+        with patch('sap_cloud_sdk.core.telemetry._provider._setup_meter_provider') as mock_setup:
             mock_provider = MagicMock()
             mock_setup.return_value = mock_provider
             
@@ -60,13 +60,13 @@ class TestGetMeter:
 
     def test_get_meter_when_provider_setup_fails(self):
         """Test that get_meter returns no-op meter when provider setup fails."""
-        import cloud_sdk_python.core.telemetry._provider as provider_module
+        import sap_cloud_sdk.core.telemetry._provider as provider_module
         
         # Reset global state
         provider_module._meter_provider = None
         provider_module._meter = None
         
-        with patch('cloud_sdk_python.core.telemetry._provider._setup_meter_provider', return_value=None):
+        with patch('sap_cloud_sdk.core.telemetry._provider._setup_meter_provider', return_value=None):
             with patch('opentelemetry.metrics.get_meter_provider') as mock_get_provider:
                 mock_no_op_provider = MagicMock()
                 mock_no_op_meter = MagicMock()
@@ -80,13 +80,13 @@ class TestGetMeter:
 
     def test_get_meter_initializes_provider_once(self):
         """Test that provider is only initialized once across multiple get_meter calls."""
-        import cloud_sdk_python.core.telemetry._provider as provider_module
+        import sap_cloud_sdk.core.telemetry._provider as provider_module
         
         # Reset global state
         provider_module._meter_provider = None
         provider_module._meter = None
         
-        with patch('cloud_sdk_python.core.telemetry._provider._setup_meter_provider') as mock_setup:
+        with patch('sap_cloud_sdk.core.telemetry._provider._setup_meter_provider') as mock_setup:
             mock_provider = MagicMock()
             mock_setup.return_value = mock_provider
             
@@ -108,7 +108,7 @@ class TestShutdown:
 
     def test_shutdown_with_active_provider(self):
         """Test shutdown with an active meter provider."""
-        import cloud_sdk_python.core.telemetry._provider as provider_module
+        import sap_cloud_sdk.core.telemetry._provider as provider_module
         
         mock_provider = MagicMock()
         provider_module._meter_provider = mock_provider
@@ -120,7 +120,7 @@ class TestShutdown:
 
     def test_shutdown_with_no_provider(self):
         """Test shutdown when no provider is active."""
-        import cloud_sdk_python.core.telemetry._provider as provider_module
+        import sap_cloud_sdk.core.telemetry._provider as provider_module
         
         provider_module._meter_provider = None
         
@@ -129,7 +129,7 @@ class TestShutdown:
 
     def test_shutdown_handles_exception(self):
         """Test that shutdown handles exceptions gracefully."""
-        import cloud_sdk_python.core.telemetry._provider as provider_module
+        import sap_cloud_sdk.core.telemetry._provider as provider_module
         
         mock_provider = MagicMock()
         mock_provider.shutdown.side_effect = Exception("Shutdown error")
@@ -149,7 +149,7 @@ class TestSetupMeterProvider:
         """Test that setup returns None when telemetry is disabled."""
         config = InstrumentationConfig(enabled=False)
         
-        with patch('cloud_sdk_python.core.telemetry._provider.get_config', return_value=config):
+        with patch('sap_cloud_sdk.core.telemetry._provider.get_config', return_value=config):
             provider = _setup_meter_provider()
             
             assert provider is None
@@ -162,11 +162,11 @@ class TestSetupMeterProvider:
             otlp_endpoint="http://localhost:4317"
         )
         
-        with patch('cloud_sdk_python.core.telemetry._provider.get_config', return_value=config):
-            with patch('cloud_sdk_python.core.telemetry._provider.Resource') as mock_resource_class:
-                with patch('cloud_sdk_python.core.telemetry._provider.OTLPMetricExporter') as mock_exporter_class:
-                    with patch('cloud_sdk_python.core.telemetry._provider.PeriodicExportingMetricReader') as mock_reader_class:
-                        with patch('cloud_sdk_python.core.telemetry._provider.MeterProvider') as mock_provider_class:
+        with patch('sap_cloud_sdk.core.telemetry._provider.get_config', return_value=config):
+            with patch('sap_cloud_sdk.core.telemetry._provider.Resource') as mock_resource_class:
+                with patch('sap_cloud_sdk.core.telemetry._provider.OTLPMetricExporter') as mock_exporter_class:
+                    with patch('sap_cloud_sdk.core.telemetry._provider.PeriodicExportingMetricReader') as mock_reader_class:
+                        with patch('sap_cloud_sdk.core.telemetry._provider.MeterProvider') as mock_provider_class:
                             with patch('opentelemetry.metrics.set_meter_provider') as mock_set_provider:
                                 mock_resource = MagicMock()
                                 mock_exporter = MagicMock()
@@ -212,11 +212,11 @@ class TestSetupMeterProvider:
         ]
         
         for config in test_configs:
-            with patch('cloud_sdk_python.core.telemetry._provider.get_config', return_value=config):
-                with patch('cloud_sdk_python.core.telemetry._provider.Resource'):
-                    with patch('cloud_sdk_python.core.telemetry._provider.OTLPMetricExporter') as mock_exporter:
-                        with patch('cloud_sdk_python.core.telemetry._provider.PeriodicExportingMetricReader'):
-                            with patch('cloud_sdk_python.core.telemetry._provider.MeterProvider') as mock_provider_class:
+            with patch('sap_cloud_sdk.core.telemetry._provider.get_config', return_value=config):
+                with patch('sap_cloud_sdk.core.telemetry._provider.Resource'):
+                    with patch('sap_cloud_sdk.core.telemetry._provider.OTLPMetricExporter') as mock_exporter:
+                        with patch('sap_cloud_sdk.core.telemetry._provider.PeriodicExportingMetricReader'):
+                            with patch('sap_cloud_sdk.core.telemetry._provider.MeterProvider') as mock_provider_class:
                                 with patch('opentelemetry.metrics.set_meter_provider'):
                                     mock_provider = MagicMock()
                                     mock_provider_class.return_value = mock_provider

@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from contextlib import ExitStack
 
-from cloud_sdk_python.core.telemetry.auto_instrument import auto_instrument
+from sap_cloud_sdk.core.telemetry.auto_instrument import auto_instrument
 
 
 @pytest.fixture
@@ -12,11 +12,11 @@ def mock_traceloop_components():
     """Fixture that mocks Traceloop SDK components."""
     with ExitStack() as stack:
         mocks = {
-            'traceloop': stack.enter_context(patch('cloud_sdk_python.core.telemetry.auto_instrument.Traceloop')),
-            'exporter': stack.enter_context(patch('cloud_sdk_python.core.telemetry.auto_instrument.OTLPSpanExporter')),
-            'transformer': stack.enter_context(patch('cloud_sdk_python.core.telemetry.auto_instrument.GenAIAttributeTransformer')),
-            'create_resource': stack.enter_context(patch('cloud_sdk_python.core.telemetry.auto_instrument.create_resource_attributes_from_env')),
-            'get_conhos_app_name': stack.enter_context(patch('cloud_sdk_python.core.telemetry.auto_instrument._get_conhos_app_name')),
+            'traceloop': stack.enter_context(patch('sap_cloud_sdk.core.telemetry.auto_instrument.Traceloop')),
+            'exporter': stack.enter_context(patch('sap_cloud_sdk.core.telemetry.auto_instrument.OTLPSpanExporter')),
+            'transformer': stack.enter_context(patch('sap_cloud_sdk.core.telemetry.auto_instrument.GenAIAttributeTransformer')),
+            'create_resource': stack.enter_context(patch('sap_cloud_sdk.core.telemetry.auto_instrument.create_resource_attributes_from_env')),
+            'get_conhos_app_name': stack.enter_context(patch('sap_cloud_sdk.core.telemetry.auto_instrument._get_conhos_app_name')),
         }
         yield mocks
 
@@ -27,7 +27,7 @@ class TestAutoInstrument:
     def test_auto_instrument_without_endpoint(self):
         """Test that auto_instrument warns when OTEL_EXPORTER_OTLP_ENDPOINT is not set."""
         with patch.dict('os.environ', {}, clear=True):
-            with patch('cloud_sdk_python.core.telemetry.auto_instrument.logger') as mock_logger:
+            with patch('sap_cloud_sdk.core.telemetry.auto_instrument.logger') as mock_logger:
                 auto_instrument()
                 
                 # Should log warning about missing endpoint
@@ -103,7 +103,7 @@ class TestAutoInstrument:
         mock_traceloop_components['create_resource'].return_value = {}
         
         with patch.dict('os.environ', {'OTEL_EXPORTER_OTLP_ENDPOINT': 'http://localhost:4317'}, clear=True):
-            with patch('cloud_sdk_python.core.telemetry.auto_instrument.logger') as mock_logger:
+            with patch('sap_cloud_sdk.core.telemetry.auto_instrument.logger') as mock_logger:
                 auto_instrument()
                 
                 # Verify info logs were called

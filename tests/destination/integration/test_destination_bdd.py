@@ -6,7 +6,7 @@ from typing import List, Optional
 import pytest
 from pytest_bdd import scenarios, given, when, then, parsers
 
-from cloud_sdk_python.destination import (
+from sap_cloud_sdk.destination import (
     Destination,
     Fragment,
     Certificate,
@@ -15,11 +15,11 @@ from cloud_sdk_python.destination import (
     ListOptions,
     ConsumptionOptions,
 )
-from cloud_sdk_python.destination.exceptions import (
+from sap_cloud_sdk.destination.exceptions import (
     HttpError,
     DestinationOperationError,
 )
-from cloud_sdk_python.destination.utils._pagination import PagedResult
+from sap_cloud_sdk.destination.utils._pagination import PagedResult
 
 # Load scenarios from feature file
 scenarios("destination.feature")

@@ -2,7 +2,7 @@
 
 from unittest.mock import patch, MagicMock
 
-from cloud_sdk_python.core.telemetry.config import (
+from sap_cloud_sdk.core.telemetry.config import (
     _get_conhos_region,
     _get_conhos_environment,
     _get_conhos_subaccount_id,
@@ -10,7 +10,7 @@ from cloud_sdk_python.core.telemetry.config import (
     _get_hostname,
     DEFAULT_UNKNOWN,
 )
-from cloud_sdk_python.core.telemetry.constants import (
+from sap_cloud_sdk.core.telemetry.constants import (
     LLM_TOKEN_HISTOGRAM_NAME,
     ATTR_SERVICE_INSTANCE_ID,
     ATTR_SERVICE_NAME,
@@ -28,8 +28,8 @@ from cloud_sdk_python.core.telemetry.constants import (
     ATTR_GENAI_OPERATION_NAME,
     ATTR_GENAI_TOKEN_TYPE, ATTR_SAP_TENANT_ID,
 )
-from cloud_sdk_python.core.telemetry.module import Module
-from cloud_sdk_python.core.telemetry.telemetry import (
+from sap_cloud_sdk.core.telemetry.module import Module
+from sap_cloud_sdk.core.telemetry.telemetry import (
     record_request_metric,
     record_error_metric,
     record_aicore_metric,
@@ -172,7 +172,7 @@ class TestRecordRequestMetric:
 
     def test_record_request_metric_basic(self):
         """Test recording a basic request metric."""
-        import cloud_sdk_python.core.telemetry.telemetry as telemetry_module
+        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
         
         mock_counter = MagicMock()
         telemetry_module._request_counter = mock_counter
@@ -193,7 +193,7 @@ class TestRecordRequestMetric:
 
     def test_record_request_metric_with_source(self):
         """Test recording request metric with source."""
-        import cloud_sdk_python.core.telemetry.telemetry as telemetry_module
+        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
         
         mock_counter = MagicMock()
         telemetry_module._request_counter = mock_counter
@@ -212,12 +212,12 @@ class TestRecordRequestMetric:
 
     def test_record_request_metric_lazy_initialization(self):
         """Test that request metric initializes counter lazily."""
-        import cloud_sdk_python.core.telemetry.telemetry as telemetry_module
+        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
         
         # Reset counter to None to trigger initialization
         telemetry_module._request_counter = None
         
-        with patch('cloud_sdk_python.core.telemetry.telemetry._initialize_metrics') as mock_init:
+        with patch('sap_cloud_sdk.core.telemetry.telemetry._initialize_metrics') as mock_init:
             mock_counter = MagicMock()
             
             def set_counter():
@@ -236,7 +236,7 @@ class TestRecordRequestMetric:
 
     def test_record_request_metric_handles_exception(self):
         """Test that request metric handles exceptions gracefully."""
-        import cloud_sdk_python.core.telemetry.telemetry as telemetry_module
+        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
         
         mock_counter = MagicMock()
         mock_counter.add.side_effect = Exception("Test error")
@@ -251,11 +251,11 @@ class TestRecordRequestMetric:
 
     def test_record_request_metric_returns_early_if_counter_none(self):
         """Test that function returns early if counter initialization fails."""
-        import cloud_sdk_python.core.telemetry.telemetry as telemetry_module
+        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
         
         telemetry_module._request_counter = None
         
-        with patch('cloud_sdk_python.core.telemetry.telemetry._initialize_metrics'):
+        with patch('sap_cloud_sdk.core.telemetry.telemetry._initialize_metrics'):
             # Counter remains None after initialization
             record_request_metric(
                 module=Module.AUDITLOG,
@@ -270,7 +270,7 @@ class TestRecordErrorMetric:
 
     def test_record_error_metric_basic(self):
         """Test recording a basic error metric."""
-        import cloud_sdk_python.core.telemetry.telemetry as telemetry_module
+        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
         
         mock_counter = MagicMock()
         telemetry_module._error_counter = mock_counter
@@ -291,7 +291,7 @@ class TestRecordErrorMetric:
 
     def test_record_error_metric_with_source(self):
         """Test recording error metric with source."""
-        import cloud_sdk_python.core.telemetry.telemetry as telemetry_module
+        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
         
         mock_counter = MagicMock()
         telemetry_module._error_counter = mock_counter
@@ -311,11 +311,11 @@ class TestRecordErrorMetric:
 
     def test_record_error_metric_lazy_initialization(self):
         """Test that error metric initializes counter lazily."""
-        import cloud_sdk_python.core.telemetry.telemetry as telemetry_module
+        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
         
         telemetry_module._error_counter = None
         
-        with patch('cloud_sdk_python.core.telemetry.telemetry._initialize_metrics') as mock_init:
+        with patch('sap_cloud_sdk.core.telemetry.telemetry._initialize_metrics') as mock_init:
             mock_counter = MagicMock()
             
             def set_counter():
@@ -334,7 +334,7 @@ class TestRecordErrorMetric:
 
     def test_record_error_metric_handles_exception(self):
         """Test that error metric handles exceptions gracefully."""
-        import cloud_sdk_python.core.telemetry.telemetry as telemetry_module
+        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
         
         mock_counter = MagicMock()
         mock_counter.add.side_effect = Exception("Test error")
@@ -352,7 +352,7 @@ class TestRecordAICoreMetric:
 
     def test_record_aicore_metric_with_new_signature(self):
         """Test recording AI Core metric with new mandatory parameters."""
-        import cloud_sdk_python.core.telemetry.telemetry as telemetry_module
+        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
 
         mock_histogram = MagicMock()
         telemetry_module._aicore_token_histogram = mock_histogram
@@ -385,7 +385,7 @@ class TestRecordAICoreMetric:
 
     def test_record_aicore_metric_with_custom_attributes(self):
         """Test recording AI Core metric with custom attributes."""
-        import cloud_sdk_python.core.telemetry.telemetry as telemetry_module
+        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
 
         mock_histogram = MagicMock()
         telemetry_module._aicore_token_histogram = mock_histogram
@@ -411,7 +411,7 @@ class TestRecordAICoreMetric:
 
     def test_initialize_aicore_metrics_creates_histogram(self):
         """Test that AI Core metrics creates a histogram not a counter."""
-        import cloud_sdk_python.core.telemetry.telemetry as telemetry_module
+        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
 
         telemetry_module._aicore_token_histogram = None
 
@@ -419,7 +419,7 @@ class TestRecordAICoreMetric:
         mock_histogram = MagicMock()
         mock_meter.create_histogram.return_value = mock_histogram
 
-        with patch('cloud_sdk_python.core.telemetry.telemetry.get_meter', return_value=mock_meter):
+        with patch('sap_cloud_sdk.core.telemetry.telemetry.get_meter', return_value=mock_meter):
             _initialize_aicore_metrics()
 
             assert telemetry_module._aicore_token_histogram is mock_histogram

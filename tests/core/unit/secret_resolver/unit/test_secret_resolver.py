@@ -5,11 +5,11 @@ from dataclasses import dataclass, field
 from unittest.mock import patch, mock_open
 import pytest
 
-from cloud_sdk_python.core.secret_resolver import read_from_mount_and_fallback_to_env_var
+from sap_cloud_sdk.core.secret_resolver import read_from_mount_and_fallback_to_env_var
 
 
 @dataclass
-class TestConfig:
+class SampleConfig:
     username: str = field(default="", metadata={"secret": "user"})
     password: str = ""
     endpoint: str = "default"
@@ -23,12 +23,12 @@ class NonStringConfig:
 class TestSecretResolver:
 
     def test_validate_inputs_empty_module(self):
-        config = TestConfig()
+        config = SampleConfig()
         with pytest.raises(ValueError, match="module name cannot be empty"):
             read_from_mount_and_fallback_to_env_var("/path", "VAR", "", "instance", config)
 
     def test_validate_inputs_empty_instance(self):
-        config = TestConfig()
+        config = SampleConfig()
         with pytest.raises(ValueError, match="instance name cannot be empty"):
             read_from_mount_and_fallback_to_env_var("/path", "VAR", "module", "", config)
 
@@ -51,7 +51,7 @@ class TestSecretResolver:
             mock_open(read_data="test_endpoint").return_value
         ]
         
-        config = TestConfig()
+        config = SampleConfig()
         read_from_mount_and_fallback_to_env_var("/secrets", "VAR", "module", "instance", config)
         
         assert config.username == "test_user"
@@ -62,20 +62,20 @@ class TestSecretResolver:
     @patch('os.stat')
     @patch('builtins.open', side_effect=FileNotFoundError("File not found"))
     def test_load_from_mount_file_not_found(self, mock_file, mock_stat, mock_isdir):
-        config = TestConfig()
+        config = SampleConfig()
         with pytest.raises(RuntimeError, match="failed to read secrets.*failed to read secret file"):
             read_from_mount_and_fallback_to_env_var("/secrets", "VAR", "module", "instance", config)
 
     @patch('os.stat', side_effect=FileNotFoundError("Path not found"))
     def test_validate_path_not_exists(self, mock_stat):
-        config = TestConfig()
+        config = SampleConfig()
         with pytest.raises(RuntimeError, match="mount failed"):
             read_from_mount_and_fallback_to_env_var("/nonexistent", "VAR", "module", "instance", config)
 
     @patch('os.path.isdir', return_value=False)
     @patch('os.stat')
     def test_validate_path_not_directory(self, mock_stat, mock_isdir):
-        config = TestConfig()
+        config = SampleConfig()
         with pytest.raises(RuntimeError, match="mount failed"):
             read_from_mount_and_fallback_to_env_var("/file", "VAR", "module", "instance", config)
 
@@ -85,7 +85,7 @@ class TestSecretResolver:
         "VAR_MODULE_INSTANCE_ENDPOINT": "env_endpoint"
     })
     def test_load_from_env_success(self):
-        config = TestConfig()
+        config = SampleConfig()
         with patch('os.path.isdir', return_value=False), \
              patch('os.stat', side_effect=FileNotFoundError()):
             read_from_mount_and_fallback_to_env_var("/nonexistent", "VAR", "module", "instance", config)
@@ -96,7 +96,7 @@ class TestSecretResolver:
 
     @patch.dict(os.environ, {"VAR_MODULE_INSTANCE_PASSWORD": "env_pass"})
     def test_load_from_env_missing_var(self):
-        config = TestConfig()
+        config = SampleConfig()
         with patch('os.path.isdir', return_value=False), \
              patch('os.stat', side_effect=FileNotFoundError()):
             with pytest.raises(RuntimeError, match="env var failed"):
@@ -112,14 +112,14 @@ class TestSecretResolver:
             mock_open(read_data="mount_endpoint").return_value
         ]
         
-        config = TestConfig()
+        config = SampleConfig()
         read_from_mount_and_fallback_to_env_var("/secrets", "VAR", "module", "instance", config)
         
         assert config.username == "mount_user"
 
     @patch.dict(os.environ, {}, clear=True)
     def test_both_fail_aggregated_error(self):
-        config = TestConfig()
+        config = SampleConfig()
         with patch('os.path.isdir', return_value=False), \
              patch('os.stat', side_effect=FileNotFoundError()):
             with pytest.raises(RuntimeError, match="mount failed.*env var failed"):
@@ -135,7 +135,7 @@ class TestSecretResolver:
             mock_open(read_data="endpoint").return_value
         ]
         
-        config = TestConfig()
+        config = SampleConfig()
         read_from_mount_and_fallback_to_env_var("/secrets", "VAR", "module", "instance", config)
         
         assert config.username == "user\nwith\nnewlines"
@@ -163,7 +163,7 @@ class TestSecretResolver:
             mock_open(read_data="field_endpoint").return_value
         ]
         
-        config = TestConfig()
+        config = SampleConfig()
         read_from_mount_and_fallback_to_env_var("/secrets", "VAR", "module", "instance", config)
         
         assert config.username == "metadata_user"
@@ -175,7 +175,7 @@ class TestSecretResolver:
     })
     def test_env_instance_name_hyphen_normalization(self):
         # Given instance name with hyphen, the resolver should replace '-' with '_'
-        config = TestConfig()
+        config = SampleConfig()
         with patch('os.path.isdir', return_value=False), \
              patch('os.stat', side_effect=FileNotFoundError()):
             read_from_mount_and_fallback_to_env_var(

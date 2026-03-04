@@ -6,7 +6,7 @@ from contextlib import contextmanager
 
 from opentelemetry.trace import Status, StatusCode, SpanKind
 
-from cloud_sdk_python.core.telemetry.tracer import (
+from sap_cloud_sdk.core.telemetry.tracer import (
     context_overlay,
     get_current_span,
     add_span_attribute,
@@ -14,7 +14,7 @@ from cloud_sdk_python.core.telemetry.tracer import (
     execute_tool_span,
     invoke_agent_span,
 )
-from cloud_sdk_python.core.telemetry.genai_operation import GenAIOperation
+from sap_cloud_sdk.core.telemetry.genai_operation import GenAIOperation
 
 
 class TestContextOverlay:

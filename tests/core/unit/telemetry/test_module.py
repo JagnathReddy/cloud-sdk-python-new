@@ -2,7 +2,7 @@
 
 import pytest
 
-from cloud_sdk_python.core.telemetry.module import Module
+from sap_cloud_sdk.core.telemetry.module import Module
 
 
 class TestModule:

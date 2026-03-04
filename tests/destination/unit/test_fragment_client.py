@@ -4,9 +4,9 @@ import pytest
 from unittest.mock import Mock, MagicMock
 from requests import Response
 
-from cloud_sdk_python.destination.fragment_client import FragmentClient
-from cloud_sdk_python.destination._models import AccessStrategy, Fragment, Level
-from cloud_sdk_python.destination.exceptions import (
+from sap_cloud_sdk.destination.fragment_client import FragmentClient
+from sap_cloud_sdk.destination._models import AccessStrategy, Fragment, Level
+from sap_cloud_sdk.destination.exceptions import (
     DestinationOperationError,
     HttpError,
 )

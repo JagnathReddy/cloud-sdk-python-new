@@ -2,7 +2,7 @@
 
 import pytest
 
-from cloud_sdk_python.core.auditlog.exceptions import (
+from sap_cloud_sdk.core.auditlog.exceptions import (
     AuditLogError,
     ClientCreationError,
     TransportError,

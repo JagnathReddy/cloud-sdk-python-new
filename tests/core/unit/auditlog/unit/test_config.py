@@ -4,12 +4,12 @@ import json
 import pytest
 from unittest.mock import patch, MagicMock
 
-from cloud_sdk_python.core.auditlog.config import (
+from sap_cloud_sdk.core.auditlog.config import (
     AuditLogConfig,
     BindingData,
     _load_config_from_env
 )
-from cloud_sdk_python.core.auditlog.exceptions import ClientCreationError
+from sap_cloud_sdk.core.auditlog.exceptions import ClientCreationError
 
 
 class TestAuditLogConfig:
@@ -194,7 +194,7 @@ class TestBindingData:
 
 class TestLoadConfigFromEnv:
 
-    @patch('cloud_sdk_python.core.secret_resolver.read_from_mount_and_fallback_to_env_var')
+    @patch('sap_cloud_sdk.core.secret_resolver.read_from_mount_and_fallback_to_env_var')
     def test_load_config_success(self, mock_read):
         mock_binding = BindingData(
             url="https://service.example.com",
@@ -222,7 +222,7 @@ class TestLoadConfigFromEnv:
             mock_read.call_args[0][4]
         )
 
-    @patch('cloud_sdk_python.core.secret_resolver.read_from_mount_and_fallback_to_env_var')
+    @patch('sap_cloud_sdk.core.secret_resolver.read_from_mount_and_fallback_to_env_var')
     def test_load_config_validation_error(self, mock_read):
         def mock_read_side_effect(mount_path, env_var, service, instance, binding_data):
             binding_data.url = ""
@@ -233,14 +233,14 @@ class TestLoadConfigFromEnv:
         with pytest.raises(ClientCreationError, match="Failed to load configuration"):
             _load_config_from_env()
 
-    @patch('cloud_sdk_python.core.secret_resolver.read_from_mount_and_fallback_to_env_var')
+    @patch('sap_cloud_sdk.core.secret_resolver.read_from_mount_and_fallback_to_env_var')
     def test_load_config_read_exception(self, mock_read):
         mock_read.side_effect = Exception("Mount read failed")
         
         with pytest.raises(ClientCreationError, match="Failed to load configuration"):
             _load_config_from_env()
 
-    @patch('cloud_sdk_python.core.secret_resolver.read_from_mount_and_fallback_to_env_var')
+    @patch('sap_cloud_sdk.core.secret_resolver.read_from_mount_and_fallback_to_env_var')
     def test_load_config_invalid_uaa(self, mock_read):
         def mock_read_side_effect(mount_path, env_var, service, instance, binding_data):
             binding_data.url = "https://service.example.com"

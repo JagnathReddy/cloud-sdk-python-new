@@ -3,7 +3,7 @@
 import pytest
 from unittest.mock import patch
 
-from cloud_sdk_python.core.telemetry.config import (
+from sap_cloud_sdk.core.telemetry.config import (
     InstrumentationConfig,
     get_config,
     set_config,
@@ -111,7 +111,7 @@ class TestGlobalConfig:
     def test_get_config_returns_singleton(self):
         """Test that get_config returns the same instance."""
         # Reset global config
-        import cloud_sdk_python.core.telemetry.config as config_module
+        import sap_cloud_sdk.core.telemetry.config as config_module
         config_module._config = None
         
         with patch.dict('os.environ', {}, clear=True):
@@ -123,7 +123,7 @@ class TestGlobalConfig:
     def test_get_config_initializes_from_env(self):
         """Test that get_config initializes from environment."""
         # Reset global config
-        import cloud_sdk_python.core.telemetry.config as config_module
+        import sap_cloud_sdk.core.telemetry.config as config_module
         config_module._config = None
         
         with patch.dict('os.environ', {
@@ -137,7 +137,7 @@ class TestGlobalConfig:
     def test_set_config_overrides_global(self):
         """Test that set_config overrides the global configuration."""
         # Reset global config
-        import cloud_sdk_python.core.telemetry.config as config_module
+        import sap_cloud_sdk.core.telemetry.config as config_module
         config_module._config = None
         
         custom_config = InstrumentationConfig(
@@ -156,7 +156,7 @@ class TestGlobalConfig:
     def test_set_config_affects_subsequent_get_config(self):
         """Test that set_config affects all subsequent get_config calls."""
         # Reset global config
-        import cloud_sdk_python.core.telemetry.config as config_module
+        import sap_cloud_sdk.core.telemetry.config as config_module
         config_module._config = None
         
         config1 = InstrumentationConfig(enabled=True, otlp_endpoint="http://endpoint1:4317")

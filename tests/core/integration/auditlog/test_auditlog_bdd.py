@@ -6,7 +6,7 @@ from typing import Dict, List, Any, Optional
 import pytest
 from pytest_bdd import scenarios, given, when, then, parsers
 
-from cloud_sdk_python.core.auditlog import (
+from sap_cloud_sdk.core.auditlog import (
     create_client,
     SecurityEvent,
     DataAccessEvent,
@@ -20,7 +20,7 @@ from cloud_sdk_python.core.auditlog import (
     ChangeAttribute,
     DeletedAttribute
 )
-from cloud_sdk_python.core.auditlog.exceptions import (
+from sap_cloud_sdk.core.auditlog.exceptions import (
     ClientCreationError,
     TransportError,
     AuthenticationError

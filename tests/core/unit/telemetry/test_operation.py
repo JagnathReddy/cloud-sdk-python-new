@@ -2,7 +2,7 @@
 
 import pytest
 
-from cloud_sdk_python.core.telemetry.operation import Operation
+from sap_cloud_sdk.core.telemetry.operation import Operation
 
 
 class TestOperation:
