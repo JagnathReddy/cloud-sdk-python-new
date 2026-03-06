@@ -27,8 +27,6 @@ This guide consolidates the full release and deployment process for the Cloud SD
    git commit -m "feat: did something"
    ```
 
-> Make sure to test your development build before opening the PR. See the [Development Builds](#development-builds) section.
-
 5. Push and open PR, get approval and merge
    ```bash
    git push -u origin branch-name
@@ -37,45 +35,28 @@ This guide consolidates the full release and deployment process for the Cloud SD
    - Example: `feat(): add xyz`
    - See: [Conventional Commits](https://www.conventionalcommits.org/)
 
-## Tag and Create the GitHub Release
+## Create and Publish GitHub Release
 
-6. Tag on main and push tag
-   ```bash
-   git checkout main && git pull
-   git tag vX.Y.Z
-   git push origin vX.Y.Z
-   ```
+6. Create GitHub release (this will automatically publish to PyPI)
+   - Go to the repository's **Releases** page
+   - Click **"Draft a new release"**
+   - Choose the tag: `vX.Y.Z` (or create new tag from main)
+   - Fill in the release title: `vX.Y.Z`
+   - Add release notes:
+     - Highlight key features and changes
+     - Include breaking changes (if any)
+     - Reference relevant issues/PRs
+     - Use the changelog as reference
+   - Click **"Publish release"**
 
-7. Create GitHub release
-TODO: To be defined
+7. Automated PyPI publication
+   - The [Publish Package to PyPI](../.github/workflows/release.yaml) workflow will automatically trigger
+   - The workflow will:
+     - Extract version from `pyproject.toml`
+     - Check if version already exists on PyPI (prevents duplicates)
+     - Build the package with `uv build`
+     - Publish to PyPI using trusted publishing (OIDC)
+   - Monitor the workflow in the **Actions** tab to confirm successful publication
+   - Package will be available at: `https://pypi.org/project/sap-cloud-sdk/X.Y.Z/`
 
-## Publish Artifact (CI/CD)
-
-1. Navigate to the repository’s **Actions** tab
-2. Select the **"Release Artifact"** workflow
-3. Click **"Run workflow"**
-4. Select the branch to deploy from (`main` for releases, your feature branch for test builds)
-5. Click **"Run workflow"** to start
-
-## Development Builds
-Before merging your branch to main, make sure to deploy a test artifact and test it. Use the standard PEP 440-compliant format:
-
-```
-<target_version>.dev<YYYYMMDD>+<description>
-```
-
-Examples:
-```toml
-# Testing new authentication feature
-version = "0.2.0.dev20251013+feature.auth"
-
-# Performance improvements
-version = "0.1.1.dev20251013+perf.optimization"
-```
-
-Format breakdown:
-- Target Version: `0.2.0` — next planned release
-- Dev Identifier: `.dev` — indicates development version
-- Date: `20251013` — creation date (YYYYMMDD)
-- Local Separator: `+`
-- Description: `feature.auth` — brief description
+> **Note:** The version in `pyproject.toml` must match the release tag (without the 'v' prefix). For example, tag `vX.Y.Z` requires `version = "X.Y.Z"` in `pyproject.toml`.
