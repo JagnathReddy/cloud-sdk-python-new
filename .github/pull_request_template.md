@@ -31,7 +31,7 @@ Describe how reviewers can test your changes:
 
 Before submitting your PR, please review and check the following:
 
-- [ ] I have read the [Contributing Guidelines](../docs/CONTRIBUTING.md)
+- [ ] I have read the [Contributing Guidelines](../CONTRIBUTING.md)
 - [ ] I have verified that my changes solve the issue
 - [ ] I have added/updated automated tests to cover my changes
 - [ ] All tests pass locally
