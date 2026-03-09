@@ -104,38 +104,6 @@ with invoke_agent_span(provider="openai", agent_name="SupportBot", agent_id="id"
     response = client.beta.threads.runs.create(...)
 ```
 
-### Record token metrics
-
-```python
-from sap_cloud_sdk.core.telemetry import record_aicore_metric
-
-record_aicore_metric(
-    model_name="gpt-4",
-    provider="openai",
-    operation_name="chat",
-    input_tokens=150,
-    output_tokens=75
-)
-```
-
-With custom attributes:
-
-```python
-record_aicore_metric(
-    model_name="gpt-4",
-    provider="openai",
-    operation_name="chat",
-    input_tokens=150,
-    output_tokens=75,
-    custom_attributes={
-        "user_id": "user123",
-        "feature": "document_summarization"
-    }
-)
-```
-
-Operation names: `"chat"`, `"text_completion"`, `"embeddings"`, `"generate_content"`, `"create_agent"`, `"invoke_agent"`, `"execute_tool"`
-
 ### Track tenant ID
 
 Set at request entry point:

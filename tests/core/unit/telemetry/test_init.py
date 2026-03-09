@@ -13,8 +13,7 @@ class TestTelemetryExports:
         # Core functions
         assert hasattr(telemetry, 'record_request_metric')
         assert hasattr(telemetry, 'record_error_metric')
-        assert hasattr(telemetry, 'record_aicore_metric')
-        
+
         # Types
         assert hasattr(telemetry, 'Module')
         assert hasattr(telemetry, 'Operation')
@@ -42,7 +41,6 @@ class TestTelemetryExports:
             'record_metrics',
             'record_request_metric',
             'record_error_metric',
-            'record_aicore_metric',
             'auto_instrument',
             'context_overlay',
             'get_current_span',
@@ -58,7 +56,6 @@ class TestTelemetryExports:
         from sap_cloud_sdk.core.telemetry import (
             record_request_metric,
             record_error_metric,
-            record_aicore_metric,
             Module,
             Operation,
             GenAIOperation,
@@ -72,7 +69,6 @@ class TestTelemetryExports:
         # All should be callable or types
         assert callable(record_request_metric)
         assert callable(record_error_metric)
-        assert callable(record_aicore_metric)
         assert callable(record_metrics)
         assert callable(auto_instrument)
         assert callable(context_overlay)
@@ -102,7 +98,6 @@ class TestTelemetryExports:
         assert 'record_metrics' in test_module.__dict__
         assert 'record_request_metric' in test_module.__dict__
         assert 'record_error_metric' in test_module.__dict__
-        assert 'record_aicore_metric' in test_module.__dict__
         assert 'auto_instrument' in test_module.__dict__
         assert 'context_overlay' in test_module.__dict__
         assert 'get_current_span' in test_module.__dict__

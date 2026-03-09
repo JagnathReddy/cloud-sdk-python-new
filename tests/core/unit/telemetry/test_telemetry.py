@@ -11,7 +11,6 @@ from sap_cloud_sdk.core.telemetry.config import (
     DEFAULT_UNKNOWN,
 )
 from sap_cloud_sdk.core.telemetry.constants import (
-    LLM_TOKEN_HISTOGRAM_NAME,
     ATTR_SERVICE_INSTANCE_ID,
     ATTR_SERVICE_NAME,
     ATTR_DEPLOYMENT_ENVIRONMENT,
@@ -23,19 +22,13 @@ from sap_cloud_sdk.core.telemetry.constants import (
     ATTR_FUNCTIONALITY,
     ATTR_SOURCE,
     ATTR_DEPRECATED,
-    ATTR_GENAI_REQUEST_MODEL,
-    ATTR_GENAI_PROVIDER,
-    ATTR_GENAI_OPERATION_NAME,
-    ATTR_GENAI_TOKEN_TYPE, ATTR_SAP_TENANT_ID,
+    ATTR_SAP_TENANT_ID,
 )
 from sap_cloud_sdk.core.telemetry.module import Module
 from sap_cloud_sdk.core.telemetry.telemetry import (
     record_request_metric,
     record_error_metric,
-    record_aicore_metric,
     default_attributes,
-    _initialize_aicore_metrics,
-    _genai_base_attributes,
 )
 
 
@@ -134,37 +127,6 @@ class TestDefaultAttributes:
         
         assert attrs[ATTR_DEPRECATED] is True
 
-
-
-class TestGenAIAttributes:
-    """Test suite for GenAI specific attribute functions."""
-
-    def test_genai_base_attributes_basic(self):
-        """Test GenAI base attributes generation."""
-        with patch.dict('os.environ', {}, clear=True):
-            attrs = _genai_base_attributes(
-                model_name="gpt-4",
-                provider="openai",
-                operation_name="chat"
-            )
-            
-            assert attrs[ATTR_GENAI_REQUEST_MODEL] == "gpt-4"
-            assert attrs[ATTR_GENAI_PROVIDER] == "openai"
-            assert attrs[ATTR_GENAI_OPERATION_NAME] == "chat"
-            assert attrs[ATTR_CAPABILITY] == str(Module.AICORE)
-            assert attrs[ATTR_FUNCTIONALITY] == "model_call"
-
-    def test_genai_base_attributes_includes_defaults(self):
-        """Test that GenAI base attributes include default SDK attributes."""
-        attrs = _genai_base_attributes(
-            model_name="claude-3-opus",
-            provider="anthropic",
-            operation_name="chat"
-        )
-        
-        # Should include default operation attributes
-        assert ATTR_SOURCE in attrs
-        assert ATTR_DEPRECATED in attrs
 
 
 class TestRecordRequestMetric:
@@ -347,85 +309,3 @@ class TestRecordErrorMetric:
             operation="create_destination"
         )
 
-class TestRecordAICoreMetric:
-    """Test suite for updated record_aicore_metric function."""
-
-    def test_record_aicore_metric_with_new_signature(self):
-        """Test recording AI Core metric with new mandatory parameters."""
-        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
-
-        mock_histogram = MagicMock()
-        telemetry_module._aicore_token_histogram = mock_histogram
-
-        record_aicore_metric(
-            model_name="gpt-4",
-            provider="openai",
-            operation_name="chat",
-            input_tokens=100,
-            output_tokens=50
-        )
-
-        # Should record twice - once for input, once for output
-        assert mock_histogram.record.call_count == 2
-
-        # Check first call (input tokens)
-        first_call = mock_histogram.record.call_args_list[0]
-        assert first_call[0][0] == 100
-        input_attrs = first_call[0][1]
-        assert input_attrs[ATTR_GENAI_REQUEST_MODEL] == "gpt-4"
-        assert input_attrs[ATTR_GENAI_PROVIDER] == "openai"
-        assert input_attrs[ATTR_GENAI_OPERATION_NAME] == "chat"
-        assert input_attrs[ATTR_GENAI_TOKEN_TYPE] == "input"
-
-        # Check second call (output tokens)
-        second_call = mock_histogram.record.call_args_list[1]
-        assert second_call[0][0] == 50
-        output_attrs = second_call[0][1]
-        assert output_attrs[ATTR_GENAI_TOKEN_TYPE] == "output"
-
-    def test_record_aicore_metric_with_custom_attributes(self):
-        """Test recording AI Core metric with custom attributes."""
-        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
-
-        mock_histogram = MagicMock()
-        telemetry_module._aicore_token_histogram = mock_histogram
-
-        custom_attrs = {
-            "user_id": "user123",
-            "session_id": "session456"
-        }
-
-        record_aicore_metric(
-            model_name="gpt-4",
-            provider="openai",
-            operation_name="chat",
-            input_tokens=100,
-            output_tokens=50,
-            custom_attributes=custom_attrs
-        )
-
-        # Check custom attributes are included
-        first_call_attrs = mock_histogram.record.call_args_list[0][0][1]
-        assert first_call_attrs["user_id"] == "user123"
-        assert first_call_attrs["session_id"] == "session456"
-
-    def test_initialize_aicore_metrics_creates_histogram(self):
-        """Test that AI Core metrics creates a histogram not a counter."""
-        import sap_cloud_sdk.core.telemetry.telemetry as telemetry_module
-
-        telemetry_module._aicore_token_histogram = None
-
-        mock_meter = MagicMock()
-        mock_histogram = MagicMock()
-        mock_meter.create_histogram.return_value = mock_histogram
-
-        with patch('sap_cloud_sdk.core.telemetry.telemetry.get_meter', return_value=mock_meter):
-            _initialize_aicore_metrics()
-
-            assert telemetry_module._aicore_token_histogram is mock_histogram
-
-            # Verify create_histogram was called
-            mock_meter.create_histogram.assert_called_once()
-            call_args = mock_meter.create_histogram.call_args
-            assert call_args[1]['name'] == LLM_TOKEN_HISTOGRAM_NAME
-            assert call_args[1]['unit'] == "{tokens}"

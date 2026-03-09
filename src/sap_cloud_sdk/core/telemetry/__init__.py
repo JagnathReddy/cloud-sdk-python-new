@@ -8,7 +8,6 @@ functions for SDK operations, plus automatic HTTP client instrumentation.
 from sap_cloud_sdk.core.telemetry.telemetry import (
     record_request_metric,
     record_error_metric,
-    record_aicore_metric,
     set_tenant_id,
     get_tenant_id,
 )
@@ -33,7 +32,6 @@ __all__ = [
     "record_metrics",
     "record_request_metric",
     "record_error_metric",
-    "record_aicore_metric",
     "set_tenant_id",
     "get_tenant_id",
     "auto_instrument",

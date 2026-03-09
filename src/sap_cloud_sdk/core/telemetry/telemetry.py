@@ -13,16 +13,11 @@ from sap_cloud_sdk.core.telemetry._provider import get_meter
 from sap_cloud_sdk.core.telemetry.constants import (
     REQUEST_COUNTER_NAME,
     ERROR_COUNTER_NAME,
-    LLM_TOKEN_HISTOGRAM_NAME,
     ATTR_SAP_TENANT_ID,
     ATTR_CAPABILITY,
     ATTR_FUNCTIONALITY,
     ATTR_SOURCE,
     ATTR_DEPRECATED,
-    ATTR_GENAI_REQUEST_MODEL,
-    ATTR_GENAI_OPERATION_NAME,
-    ATTR_GENAI_TOKEN_TYPE,
-    ATTR_GENAI_PROVIDER,
 )
 from sap_cloud_sdk.core.telemetry.module import Module
 
@@ -32,7 +27,6 @@ logger = logging.getLogger(__name__)
 # Global metric instruments
 _request_counter: Optional[metrics.Counter] = None
 _error_counter: Optional[metrics.Counter] = None
-_aicore_token_histogram: Optional[metrics.Histogram] = None
 
 # Context variable for per-request tenant ID
 _tenant_id_var: ContextVar[str] = ContextVar("tenant_id", default="")
@@ -134,141 +128,6 @@ def record_error_metric(
         _error_counter.add(1, attributes)
     except Exception as e:
         logger.debug(f"Failed to record error metric: {e}")
-
-
-def record_aicore_metric(
-    model_name: str,
-    provider: str,
-    operation_name: str,
-    input_tokens: int,
-    output_tokens: int,
-    custom_attributes: Optional[Dict[str, Any]] = None,
-) -> None:
-    """Record token usage metrics for GenAI model API calls.
-
-    This function records token consumption for Generative AI model API calls following
-    OpenTelemetry GenAI semantic conventions. It creates two separate histogram observations:
-    one for input tokens and one for output tokens, each differentiated by the gen_ai.token.type
-    attribute. The metrics include all default SDK attributes (service instance, SDK version,
-    deployment metadata, etc.) along with the model name.
-
-    Args:
-        model_name: The name of the GenAI model (e.g., "gpt-4", "claude-3-opus")
-        provider: The name of the GenAI provider (e.g., "openai", "anthropic", "sap-aicore")
-        operation_name: The type of GenAI operation. Well-known values include:
-            - "chat": Chat completion operation (e.g., OpenAI Chat API)
-            - "text_completion": Text completion operation
-            - "embeddings": Embeddings operation (e.g., OpenAI Create embeddings API)
-            - "generate_content": Multimodal content generation (e.g., Gemini Generate Content)
-            - "create_agent": Create GenAI agent
-            - "invoke_agent": Invoke GenAI agent
-            - "execute_tool": Execute a tool
-            Custom values are also allowed.
-        input_tokens: Number of input/prompt tokens consumed
-        output_tokens: Number of output/completion tokens generated
-        custom_attributes: Optional dictionary of additional custom attributes to include
-            in the metric. These will be merged with the standard attributes.
-
-    Example:
-        ```python
-        from sap_cloud_sdk.core.telemetry import record_aicore_metric
-
-        # Chat completion
-        record_aicore_metric(
-            model_name="gpt-4",
-            provider="openai",
-            operation_name="chat",
-            input_tokens=150,
-            output_tokens=75
-        )
-
-        # With additional custom attributes
-        record_aicore_metric(
-            model_name="gpt-4",
-            provider="openai",
-            operation_name="chat",
-            input_tokens=150,
-            output_tokens=75,
-            custom_attributes={
-                "user_id": "user123",
-                "session_id": "session456"
-            }
-        )
-        ```
-    """
-    global _aicore_token_histogram
-
-    # Lazy initialization of metrics
-    if _aicore_token_histogram is None:
-        _initialize_aicore_metrics()
-    if _aicore_token_histogram is None:
-        return
-
-    try:
-        base_attributes = _genai_base_attributes(model_name, provider, operation_name)
-
-        # Merge in any additional user-provided attributes
-        if custom_attributes:
-            base_attributes.update(custom_attributes)
-
-        # Record input tokens as separate histogram observation
-        input_attributes = base_attributes.copy()
-        input_attributes[ATTR_GENAI_TOKEN_TYPE] = "input"
-        _aicore_token_histogram.record(input_tokens, input_attributes)
-
-        # Record output tokens as separate histogram observation
-        output_attributes = base_attributes.copy()
-        output_attributes[ATTR_GENAI_TOKEN_TYPE] = "output"
-        _aicore_token_histogram.record(output_tokens, output_attributes)
-
-    except Exception as e:
-        logger.debug(f"Failed to record GenAI metric: {e}")
-
-
-def _genai_base_attributes(
-    model_name: str, provider: str, operation_name: str
-) -> Dict[str, Any]:
-    """Get base attributes for GenAI metrics.
-
-    Args:
-        model_name: The name of the LLM model
-        provider: The name of the GenAI provider
-        operation_name: The type of GenAI operation
-
-    Returns:
-        Dictionary of attributes with default SDK attributes plus GenAI-specific ones.
-    """
-    # Start with default SDK attributes for AI Core module
-    attributes = default_attributes(
-        module=Module.AICORE, source=None, operation="model_call", deprecated=False
-    )
-
-    # Add GenAI-specific attributes
-    attributes[ATTR_GENAI_REQUEST_MODEL] = model_name
-    attributes[ATTR_GENAI_PROVIDER] = provider
-    attributes[ATTR_GENAI_OPERATION_NAME] = operation_name
-
-    return attributes
-
-
-def _initialize_aicore_metrics() -> None:
-    """Initialize GenAI-specific metric instruments."""
-    global _aicore_token_histogram
-
-    try:
-        meter = get_meter()
-
-        # GenAI token usage histogram
-        _aicore_token_histogram = meter.create_histogram(
-            name=LLM_TOKEN_HISTOGRAM_NAME,
-            description="Token usage for GenAI model requests",
-            unit="{tokens}",
-        )
-
-        logger.debug("GenAI telemetry metrics initialized successfully")
-
-    except Exception as e:
-        logger.error(f"Failed to initialize GenAI telemetry metrics: {e}")
 
 
 def default_attributes(
