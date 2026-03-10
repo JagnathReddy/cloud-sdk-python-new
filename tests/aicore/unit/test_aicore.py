@@ -561,7 +561,7 @@ class TestSetAICoreConfig:
             )
 
     def test_set_config_logs_configuration(self):
-        """Test that configuration is logged (excluding sensitive information)."""
+        """Test that configuration completion is logged (excluding sensitive information)."""
         with patch("sap_cloud_sdk.aicore._get_secret") as mock_get_secret, patch(
             "sap_cloud_sdk.aicore._get_aicore_base_url"
         ) as mock_get_base_url, patch.dict("os.environ", {}, clear=True), patch(
@@ -577,11 +577,9 @@ class TestSetAICoreConfig:
 
             set_aicore_config()
 
-            # Verify logging was called
+            # Verify info logging was called with success message
             info_calls = [str(call) for call in mock_logger.info.call_args_list]
-            assert any("AICORE_AUTH_URL" in call for call in info_calls)
-            assert any("AICORE_BASE_URL" in call for call in info_calls)
-            assert any("AICORE_RESOURCE_GROUP" in call for call in info_calls)
+            assert any("AI Core configuration has been set successfully" in call for call in info_calls)
 
             # Verify sensitive info is not logged
             all_log_calls = str(mock_logger.mock_calls)

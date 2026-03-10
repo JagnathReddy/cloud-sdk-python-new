@@ -134,10 +134,8 @@ def set_aicore_config(instance_name: str = "aicore-instance") -> None:
     if resource_group:
         os.environ["AICORE_RESOURCE_GROUP"] = resource_group
 
-    # Log configuration (excluding sensitive information)
-    logger.info(f"AICORE_AUTH_URL: {auth_url}")
-    logger.info(f"AICORE_BASE_URL: {base_url}")
-    logger.info(f"AICORE_RESOURCE_GROUP: {resource_group}")
+    # Log configuration completion (excluding sensitive information)
+    logger.info("AI Core configuration has been set successfully")
 
 
 __all__ = ["set_aicore_config"]
