@@ -14,7 +14,7 @@ uv add sap-cloud-sdk
 pip install sap-cloud-sdk
 ```
 
-See further information about installation in the [main documentation](/docs/README.md#installation).
+See further information about installation in the [main documentation](/README.md#installation).
 
 ## Import
 

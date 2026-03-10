@@ -67,7 +67,7 @@ For contributing bug fixes or implementing approved features:
 
 Before starting your contribution:
 - **Examine existing modules** in the `src/sap_cloud_sdk/` directory (e.g., `auditlog`, `objectstore`, `destination`) to understand implementation patterns
-- **Read [Code Guidelines](./GUIDELINES.md)** to understand our development standards and conventions
+- **Read [Code Guidelines](docs/GUIDELINES.md)** to understand our development standards and conventions
 - **Review existing user guides** to understand the expected documentation format and API patterns
 
 ### 2. Create or claim an issue
@@ -105,7 +105,7 @@ Once your proposal receives the `approved` label, you can begin implementation:
 
 **Implementation Requirements:**
 
-Follow our [Code Guidelines](./GUIDELINES.md) when implementing your changes. For bug fixes:
+Follow our [Code Guidelines](docs/GUIDELINES.md) when implementing your changes. For bug fixes:
 - Identify the root cause of the issue
 - Implement the fix with minimal changes
 - Add or update tests to prevent regression
@@ -188,7 +188,7 @@ In particular:
 
 ## Consult Documentation
 
-Please consult our [documentation](../docs) to understand the project structure and conventions.
+Please consult our [documentation](docs/) to understand the project structure and conventions.
 
 ## Current Maintainers
 

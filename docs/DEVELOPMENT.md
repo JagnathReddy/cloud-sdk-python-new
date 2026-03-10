@@ -70,4 +70,4 @@ uv run pytest --cov=src
 For the end-to-end process to cut a release and publish artifacts, see the [Release and Deployment Guide](RELEASE.md).:
 
 ## Contributing
-For guidance on contributing with new features, see the [Contributing Guide](CONTRIBUTING.md).
+For guidance on contributing with new features, see the [Contributing Guide](../CONTRIBUTING.md).

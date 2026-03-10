@@ -8,11 +8,11 @@ The Python SDK offers a clean, type-safe API following Python best practices whi
 
 ## Available Modules
 
-- [AuditLog User Guide](../src/sap_cloud_sdk/core/auditlog/user-guide.md) - Compliance audit logging for SAP Audit Log Service
-- [Destination User Guide](../src/sap_cloud_sdk/destination/user-guide.md) - SAP BTP Destination Service integration with proxy support
-- [ObjectStore User Guide](../src/sap_cloud_sdk/objectstore/user-guide.md) - S3-compatible object storage
-- [Secret Resolver User Guide](../src/sap_cloud_sdk/core/secret_resolver/user-guide.md) - Secure credential management from mounted volumes and environment variables
-- [Telemetry User Guide](../src/sap_cloud_sdk/core/telemetry/user-guide.md) - OpenTelemetry tracing and GenAI auto-instrumentation
+- [AuditLog User Guide](src/sap_cloud_sdk/core/auditlog/user-guide.md) - Compliance audit logging for SAP Audit Log Service
+- [Destination User Guide](src/sap_cloud_sdk/destination/user-guide.md) - SAP BTP Destination Service integration with proxy support
+- [ObjectStore User Guide](src/sap_cloud_sdk/objectstore/user-guide.md) - S3-compatible object storage
+- [Secret Resolver User Guide](src/sap_cloud_sdk/core/secret_resolver/user-guide.md) - Secure credential management from mounted volumes and environment variables
+- [Telemetry User Guide](src/sap_cloud_sdk/core/telemetry/user-guide.md) - OpenTelemetry tracing and GenAI auto-instrumentation
 
 ---
 
@@ -101,7 +101,7 @@ export OTEL_EXPORTER_OTLP_ENDPOINT="https://otel-collector.example.com"
 ```python
 from sap_cloud_sdk.core.auditlog import (create_client, SecurityEvent)
 
-# Create client )
+# Create audit log client
 client = create_client()
 
 # Security event - authentication attempt
