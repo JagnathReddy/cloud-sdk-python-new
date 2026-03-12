@@ -280,9 +280,12 @@ class ObjectStoreClient:
 
         get_err = None
         try:
-            response = cast(HTTPResponse, self._minio_client.get_object(
-                bucket_name=self._creds_config.bucket, object_name=name
-            ))
+            response = cast(
+                HTTPResponse,
+                self._minio_client.get_object(
+                    bucket_name=self._creds_config.bucket, object_name=name
+                ),
+            )
             return response
         except S3Error as e:
             get_err = e
