@@ -16,4 +16,11 @@ class DMSClient:
         except Exception as e:
             raise ValueError(f"Failed to fetch access token: {e}")
         
-        credentials = credentials
+        self.credentials = credentials
+        self._admin = None  # Lazy initialization of AdminService
+
+    @property
+    def admin(self) -> AdminService:
+        if self._admin is None:
+            self._admin = AdminService(self._base_url, self._token_manager)
+        return self._admin
