@@ -83,7 +83,6 @@ class Repository:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> Repository:
-        # ✅ typed variable — pins type of p in the comprehension
         params_raw: List[Dict[str, Any]] = data.get("repositoryParams") or []
 
         return cls(
