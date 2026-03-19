@@ -81,7 +81,7 @@ class TestAutoInstrument:
         mock_traceloop_components['get_app_name'].return_value = 'test-app'
         mock_traceloop_components['create_resource'].return_value = {
             'service.name': 'test-app',
-            'sap.telemetry.sdk.language': 'python'
+            'sap.cloud_sdk.language': 'python'
         }
         
         with patch.dict('os.environ', {
