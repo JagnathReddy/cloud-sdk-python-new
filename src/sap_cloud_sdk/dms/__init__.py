@@ -1,5 +1,5 @@
 from typing import Optional
-from sap_cloud_sdk.dms.model.model import DMSCredentials
+from sap_cloud_sdk.dms.model import DMSCredentials
 from sap_cloud_sdk.dms.client import DMSClient
 from sap_cloud_sdk.dms.config import load_sdm_config_from_env_or_mount
 
