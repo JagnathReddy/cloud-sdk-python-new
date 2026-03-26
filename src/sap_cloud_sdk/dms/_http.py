@@ -38,12 +38,14 @@ class HttpInvoker:
         tenant_subdomain: Optional[str] = None,
         headers: Optional[dict[str, str]] = None,
         user_claim: Optional[UserClaim] = None,
+        params: Optional[dict[str, str]] = None,
     ) -> Response:
         logger.debug("GET %s", path)
         return self._handle(self._execute(
             lambda: requests.get(
                 f"{self._base_url}{path}",
                 headers=self._merged_headers(tenant_subdomain, headers, user_claim),
+                params=params,
                 timeout=(self._connect_timeout, self._read_timeout),
             )
         ))
@@ -100,6 +102,55 @@ class HttpInvoker:
             )
         ))
 
+    def post_form(
+        self,
+        path: str,
+        *,
+        data: dict[str, str],
+        files: Optional[dict[str, Any]] = None,
+        tenant_subdomain: Optional[str] = None,
+        user_claim: Optional[UserClaim] = None,
+    ) -> Response:
+        """POST with form-encoded data and optional multipart file uploads.
+
+        Does not set Content-Type — ``requests`` sets it automatically
+        to ``application/x-www-form-urlencoded`` or ``multipart/form-data``.
+        """
+        logger.debug("POST_FORM %s", path)
+        return self._handle(self._execute(
+            lambda: requests.post(
+                f"{self._base_url}{path}",
+                headers=self._auth_header(tenant_subdomain, user_claim),
+                data=data,
+                files=files,
+                timeout=(self._connect_timeout, self._read_timeout),
+            )
+        ))
+
+    def get_stream(
+        self,
+        path: str,
+        *,
+        params: Optional[dict[str, str]] = None,
+        tenant_subdomain: Optional[str] = None,
+        user_claim: Optional[UserClaim] = None,
+    ) -> Response:
+        """GET that returns a raw streaming Response for binary content.
+
+        The caller is responsible for closing the response.
+        On non-2xx status the usual typed exception is raised.
+        """
+        logger.debug("GET_STREAM %s", path)
+        return self._handle(self._execute(
+            lambda: requests.get(
+                f"{self._base_url}{path}",
+                headers=self._merged_headers(tenant_subdomain, None, user_claim),
+                params=params,
+                stream=True,
+                timeout=(self._connect_timeout, self._read_timeout),
+            )
+        ))
+
     def _execute(self, fn: Any) -> Response:
         """Execute an HTTP call, wrapping network errors into DMSConnectionError."""
         try:
@@ -113,6 +164,17 @@ class HttpInvoker:
         except RequestException as e:
             logger.error("Unexpected network error")
             raise DMSConnectionError("Unexpected network error") from e
+
+    def _auth_header(
+        self,
+        tenant_subdomain: Optional[str] = None,
+        user_claim: Optional[UserClaim] = None,
+    ) -> dict[str, str]:
+        """Auth-only headers (no Content-Type). Used by post_form."""
+        return {
+            "Authorization": f"Bearer {self._auth.get_token(tenant_subdomain)}",
+            **self._user_claim_headers(user_claim),
+        }
 
     def _default_headers(self, tenant_subdomain: Optional[str] = None) -> dict[str, str]:
         return {
