@@ -64,5 +64,17 @@ class Operation(str, Enum):
     DMS_UPDATE_CONFIG = "update_config"
     DMS_DELETE_CONFIG = "delete_config"
 
+    # DMS CMIS Operations
+    DMS_CREATE_FOLDER = "create_folder"
+    DMS_CREATE_DOCUMENT = "create_document"
+    DMS_CHECK_OUT = "check_out"
+    DMS_CHECK_IN = "check_in"
+    DMS_CANCEL_CHECK_OUT = "cancel_check_out"
+    DMS_APPLY_ACL = "apply_acl"
+    DMS_GET_OBJECT = "get_object"
+    DMS_GET_CONTENT = "get_content"
+    DMS_UPDATE_PROPERTIES = "update_properties"
+    DMS_GET_CHILDREN = "get_children"
+
     def __str__(self) -> str:
         return self.value
