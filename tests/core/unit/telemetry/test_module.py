@@ -52,6 +52,7 @@ class TestModule:
         assert Module.AUDITLOG in all_modules
         assert Module.DESTINATION in all_modules
         assert Module.OBJECTSTORE in all_modules
+        assert Module.DMS in all_modules
 
     def test_module_iteration(self):
         """Test iterating over Module enum."""

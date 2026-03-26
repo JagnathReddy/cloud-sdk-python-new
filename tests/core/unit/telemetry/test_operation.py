@@ -106,7 +106,5 @@ class TestOperation:
     def test_operation_count(self):
         """Test that we have the expected number of operations."""
         all_operations = list(Operation)
-        # 3 auditlog + 8 destination + 7 certificate + 7 fragment + 8 objectstore + 2 aicore = 34
-        # + 9 label operations (3 destination + 3 certificate + 3 fragment) = 44 (wait — comment is stale)
-        # 3 auditlog + 8+3 destination + 7+3 certificate + 7+3 fragment + 8 objectstore + 2 aicore = 44
-        assert len(all_operations) == 44
+        # 3 auditlog + 11 destination + 10 certificate + 10 fragment + 8 objectstore + 2 aicore + 19 dms = 63
+        assert len(all_operations) == 63
