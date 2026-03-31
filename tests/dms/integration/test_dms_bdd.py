@@ -62,6 +62,8 @@ class DMSTestContext:
         self.cleanup_configs: List[str] = []  # config IDs
         self.cleanup_objects: List[tuple] = []  # (repo_id, object_id)
         self.child_doc_id: Optional[str] = None
+        self._config_request: Optional[CreateConfigRequest] = None
+        self._expected_updated_name: str = ""
 
 
 @pytest.fixture
@@ -122,7 +124,7 @@ def select_version_repo(context: DMSTestContext, dms_client: DMSClient):
             version_repo = r
             break
     if version_repo is None:
-        pytest.skip("No version-enabled repository available")
+        pytest.skip("No version-enabled repository available")  # ty: ignore[invalid-argument-type, too-many-positional-arguments]
     context.repo = version_repo
     context.repo_id = version_repo.id
 
@@ -131,7 +133,7 @@ def select_version_repo(context: DMSTestContext, dms_client: DMSClient):
 def use_root_folder(context: DMSTestContext, dms_client: DMSClient):
     """Get the root folder ID for the selected repository."""
     # The CMIS root folder objectId is the cmis_repository_id; repo.id (UUID) is used for the URL
-    context.root_folder_id = context.repo.cmis_repository_id
+    context.root_folder_id = context.repo.cmis_repository_id  # ty: ignore[unresolved-attribute]
 
 
 # ==================== CONFIG: GIVEN ====================
@@ -164,7 +166,7 @@ def given_upload_document(context: DMSTestContext, dms_client: DMSClient, name: 
         context.repo_id,
         context.root_folder_id,
         unique_name,
-        io.BytesIO(context.content_bytes),
+        io.BytesIO(context.content_bytes),  # ty: ignore[invalid-argument-type]
         mime_type=mime_type,
     )
     context.document = doc
@@ -190,7 +192,7 @@ def create_child_document(context: DMSTestContext, dms_client: DMSClient, name: 
     unique_name = f"{uuid.uuid4().hex[:8]}-{name}"
     doc = dms_client.create_document(
         context.repo_id,
-        context.folder.object_id,
+        context.folder.object_id,  # ty: ignore[unresolved-attribute]
         unique_name,
         io.BytesIO(b"child document content"),
         mime_type="text/plain",
@@ -216,7 +218,7 @@ def list_repos(context: DMSTestContext, dms_client: DMSClient):
 def get_repo_details(context: DMSTestContext, dms_client: DMSClient):
     """Get details of the selected repository."""
     try:
-        context.repo = dms_client.get_repository(context.repo.id)
+        context.repo = dms_client.get_repository(context.repo.id)  # ty: ignore[unresolved-attribute]
         context.operation_success = True
     except Exception as e:
         context.operation_error = e
@@ -229,7 +231,7 @@ def get_repo_details(context: DMSTestContext, dms_client: DMSClient):
 def create_config(context: DMSTestContext, dms_client: DMSClient):
     """Create a repository configuration."""
     try:
-        context.config = dms_client.create_config(context._config_request)
+        context.config = dms_client.create_config(context._config_request)  # ty: ignore[invalid-argument-type]
         context.cleanup_configs.append(context.config.id)
         context.operation_success = True
     except Exception as e:
@@ -241,9 +243,9 @@ def delete_config(context: DMSTestContext, dms_client: DMSClient):
     """Delete the previously created configuration."""
     context.operation_error = None
     try:
-        dms_client.delete_config(context.config.id)
-        if context.config.id in context.cleanup_configs:
-            context.cleanup_configs.remove(context.config.id)
+        dms_client.delete_config(context.config.id)  # ty: ignore[unresolved-attribute]
+        if context.config.id in context.cleanup_configs:  # ty: ignore[unresolved-attribute]
+            context.cleanup_configs.remove(context.config.id)  # ty: ignore[unresolved-attribute]
         context.operation_success = True
     except Exception as e:
         context.operation_error = e
@@ -309,7 +311,7 @@ def upload_document(context: DMSTestContext, dms_client: DMSClient, name: str, m
             context.repo_id,
             context.root_folder_id,
             unique_name,
-            io.BytesIO(context.content_bytes),
+            io.BytesIO(context.content_bytes),  # ty: ignore[invalid-argument-type]
             mime_type=mime_type,
         )
         context.document = doc
@@ -328,7 +330,7 @@ def upload_document_no_mime(context: DMSTestContext, dms_client: DMSClient, name
             context.repo_id,
             context.root_folder_id,
             unique_name,
-            io.BytesIO(context.content_bytes),
+            io.BytesIO(context.content_bytes),  # ty: ignore[invalid-argument-type]
         )
         context.document = doc
         context.cleanup_objects.append((context.repo_id, doc.object_id))
@@ -345,7 +347,7 @@ def get_object_by_id(context: DMSTestContext, dms_client: DMSClient):
     """Get an object by its ID (document context)."""
     try:
         context.retrieved_object = dms_client.get_object(
-            context.repo_id, context.document.object_id
+            context.repo_id, context.document.object_id  # ty: ignore[unresolved-attribute]
         )
         context.operation_success = True
     except Exception as e:
@@ -357,7 +359,7 @@ def get_folder_by_id(context: DMSTestContext, dms_client: DMSClient):
     """Get a folder by its ID."""
     try:
         context.retrieved_object = dms_client.get_object(
-            context.repo_id, context.folder.object_id
+            context.repo_id, context.folder.object_id  # ty: ignore[unresolved-attribute]
         )
         context.operation_success = True
     except Exception as e:
@@ -369,7 +371,7 @@ def get_object_with_acl(context: DMSTestContext, dms_client: DMSClient):
     """Get an object with ACL data included."""
     try:
         context.retrieved_object = dms_client.get_object(
-            context.repo_id, context.document.object_id, include_acl=True
+            context.repo_id, context.document.object_id, include_acl=True  # ty: ignore[unresolved-attribute]
         )
         context.operation_success = True
     except Exception as e:
@@ -381,7 +383,7 @@ def download_content(context: DMSTestContext, dms_client: DMSClient):
     """Download the content of a document."""
     try:
         context.content_response = dms_client.get_content(
-            context.repo_id, context.document.object_id, download="attachment"
+            context.repo_id, context.document.object_id, download="attachment"  # ty: ignore[unresolved-attribute]
         )
         context.operation_success = True
     except Exception as e:
@@ -393,7 +395,7 @@ def list_children(context: DMSTestContext, dms_client: DMSClient):
     """List children of the created folder."""
     try:
         context.children_page = dms_client.get_children(
-            context.repo_id, context.folder.object_id
+            context.repo_id, context.folder.object_id  # ty: ignore[unresolved-attribute]
         )
         context.operation_success = True
     except Exception as e:
@@ -422,7 +424,7 @@ def update_object_name(context: DMSTestContext, dms_client: DMSClient, new_name:
         unique_name = f"{uuid.uuid4().hex[:8]}-{new_name}"
         context.updated_object = dms_client.update_properties(
             context.repo_id,
-            context.document.object_id,
+            context.document.object_id,  # ty: ignore[unresolved-attribute]
             {"cmis:name": unique_name},
         )
         context._expected_updated_name = unique_name
@@ -439,7 +441,7 @@ def check_out_document(context: DMSTestContext, dms_client: DMSClient):
     """Check out a document."""
     try:
         context.pwc = dms_client.check_out(
-            context.repo_id, context.document.object_id
+            context.repo_id, context.document.object_id  # ty: ignore[unresolved-attribute]
         )
         context.operation_success = True
     except Exception as e:
@@ -451,7 +453,7 @@ def cancel_check_out(context: DMSTestContext, dms_client: DMSClient):
     """Cancel a check out."""
     try:
         dms_client.cancel_check_out(
-            context.repo_id, context.pwc.object_id
+            context.repo_id, context.pwc.object_id  # ty: ignore[unresolved-attribute]
         )
         context.pwc = None
         context.operation_success = True
@@ -465,10 +467,10 @@ def check_in_document(context: DMSTestContext, dms_client: DMSClient, content: s
     try:
         context.checked_in_doc = dms_client.check_in(
             context.repo_id,
-            context.pwc.object_id,
+            context.pwc.object_id,  # ty: ignore[unresolved-attribute]
             major=True,
             file=io.BytesIO(content.encode("utf-8")),
-            file_name=context.document.name,
+            file_name=context.document.name,  # ty: ignore[unresolved-attribute]
             mime_type="text/plain",
             checkin_comment=comment,
         )
@@ -486,7 +488,7 @@ def get_acl(context: DMSTestContext, dms_client: DMSClient):
     """Get ACL for a document."""
     try:
         context.acl = dms_client.apply_acl(
-            context.repo_id, context.document.object_id
+            context.repo_id, context.document.object_id  # ty: ignore[unresolved-attribute]
         )
         context.operation_success = True
     except Exception as e:
@@ -543,12 +545,12 @@ def repo_details_success(context: DMSTestContext):
 
 @then("the repository should have a CMIS repository ID")
 def repo_has_cmis_id(context: DMSTestContext):
-    assert context.repo.cmis_repository_id
+    assert context.repo.cmis_repository_id  # ty: ignore[unresolved-attribute]
 
 
 @then("the repository should have a name")
 def repo_has_name(context: DMSTestContext):
-    assert context.repo.name
+    assert context.repo.name  # ty: ignore[unresolved-attribute]
 
 
 # ==================== CONFIG: THEN ====================
@@ -562,8 +564,8 @@ def config_created(context: DMSTestContext):
 
 @then("the configuration should have the expected name and value")
 def config_values_match(context: DMSTestContext):
-    assert context.config.config_name == context._config_request.config_name
-    assert str(context.config.config_value) == str(context._config_request.config_value)
+    assert context.config.config_name == context._config_request.config_name  # ty: ignore[unresolved-attribute]
+    assert str(context.config.config_value) == str(context._config_request.config_value)  # ty: ignore[unresolved-attribute]
 
 
 @then("the configuration deletion should be successful")
@@ -590,9 +592,9 @@ def folder_created(context: DMSTestContext):
 
 @then("the created folder should have the correct name")
 def folder_name_correct(context: DMSTestContext):
-    assert context.folder.name
+    assert context.folder.name  # ty: ignore[unresolved-attribute]
     # Name starts with UUID prefix, just verify it's set
-    assert len(context.folder.name) > 0
+    assert len(context.folder.name) > 0  # ty: ignore[unresolved-attribute]
 
 
 # ==================== DOCUMENT: THEN ====================
@@ -607,18 +609,18 @@ def doc_uploaded(context: DMSTestContext):
 
 @then("the uploaded document should have the correct name")
 def doc_name_correct(context: DMSTestContext):
-    assert context.document.name
-    assert len(context.document.name) > 0
+    assert context.document.name  # ty: ignore[unresolved-attribute]
+    assert len(context.document.name) > 0  # ty: ignore[unresolved-attribute]
 
 
 @then(parsers.parse('the document should have mime type "{expected_mime}"'))
 def doc_mime_type(context: DMSTestContext, expected_mime: str):
-    assert context.document.content_stream_mime_type == expected_mime
+    assert context.document.content_stream_mime_type == expected_mime  # ty: ignore[unresolved-attribute]
 
 
 @then("the document should have a mime type assigned by the server")
 def doc_has_any_mime_type(context: DMSTestContext):
-    assert context.document.content_stream_mime_type is not None
+    assert context.document.content_stream_mime_type is not None  # ty: ignore[unresolved-attribute]
 
 
 # ==================== READ: THEN ====================
@@ -643,7 +645,7 @@ def object_is_folder(context: DMSTestContext):
 @then(parsers.parse('the object name should be "{expected_name}"'))
 def object_name_matches(context: DMSTestContext, expected_name: str):
     # Name has UUID prefix, so check suffix
-    assert context.retrieved_object.name.endswith(expected_name)
+    assert context.retrieved_object.name.endswith(expected_name)  # ty: ignore[unresolved-attribute]
 
 
 @then("the download should be successful")
@@ -654,7 +656,7 @@ def download_success(context: DMSTestContext):
 
 @then(parsers.parse('the downloaded content should match "{expected}"'))
 def download_content_match(context: DMSTestContext, expected: str):
-    actual = context.content_response.content.decode("utf-8")
+    actual = context.content_response.content.decode("utf-8")  # ty: ignore[unresolved-attribute]
     assert actual == expected
 
 
@@ -667,7 +669,7 @@ def children_success(context: DMSTestContext):
 
 @then(parsers.parse("the children should contain at least {count:d} item"))
 def children_count(context: DMSTestContext, count: int):
-    assert len(context.children_page.objects) >= count
+    assert len(context.children_page.objects) >= count  # ty: ignore[unresolved-attribute]
 
 
 # ==================== UPDATE: THEN ====================
@@ -682,7 +684,7 @@ def update_success(context: DMSTestContext):
 @then(parsers.parse('the updated object name should be "{expected_name}"'))
 def updated_name_matches(context: DMSTestContext, expected_name: str):
     # Actual name has UUID prefix
-    assert context.updated_object.name == context._expected_updated_name
+    assert context.updated_object.name == context._expected_updated_name  # ty: ignore[unresolved-attribute]
 
 
 # ==================== VERSIONING: THEN ====================
@@ -696,7 +698,7 @@ def checkout_success(context: DMSTestContext):
 
 @then("the PWC should be a private working copy")
 def pwc_is_private(context: DMSTestContext):
-    assert context.pwc.is_private_working_copy is True
+    assert context.pwc.is_private_working_copy is True  # ty: ignore[unresolved-attribute]
 
 
 @then("the cancel check out should be successful")
@@ -713,7 +715,7 @@ def checkin_success(context: DMSTestContext):
 
 @then("the new version label should not be empty")
 def version_label_set(context: DMSTestContext):
-    assert context.checked_in_doc.version_label
+    assert context.checked_in_doc.version_label  # ty: ignore[unresolved-attribute]
 
 
 # ==================== ACL: THEN ====================
