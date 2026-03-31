@@ -15,7 +15,7 @@ def dms_client():
         client = create_client(instance="default")
         return client
     except Exception as e:
-        pytest.skip(f"DMS integration tests require credentials: {e}")  # ty: ignore[invalid-argument-type]
+        pytest.skip(f"DMS integration tests require credentials: {e}")  # ty: ignore[invalid-argument-type, too-many-positional-arguments]
 
 
 
