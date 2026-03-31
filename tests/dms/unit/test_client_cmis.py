@@ -102,7 +102,7 @@ def client():
         mock_http_cls.return_value = mock_http
         c = DMSClient(creds)
         # Expose the mock for assertions
-        c._mock_http = mock_http
+        c._mock_http = mock_http  # ty: ignore[unresolved-attribute]
         yield c
 
 

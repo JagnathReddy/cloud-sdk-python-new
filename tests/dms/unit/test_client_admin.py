@@ -79,7 +79,7 @@ def client():
                 identityzone="test-zone",
             )
             c = DMSClient(creds)
-            c._mock_http = mock_http
+            c._mock_http = mock_http  # ty: ignore[unresolved-attribute]
             yield c
 
 
