@@ -6,6 +6,7 @@ from requests.exceptions import RequestException
 from sap_cloud_sdk.dms._auth import Auth
 from sap_cloud_sdk.dms.exceptions import (
     DMSError,
+    DMSConflictException,
     DMSConnectionError,
     DMSInvalidArgumentException,
     DMSObjectNotFoundException,
@@ -38,15 +39,19 @@ class HttpInvoker:
         tenant_subdomain: Optional[str] = None,
         headers: Optional[dict[str, str]] = None,
         user_claim: Optional[UserClaim] = None,
+        params: Optional[dict[str, str]] = None,
     ) -> Response:
         logger.debug("GET %s", path)
-        return self._handle(self._execute(
-            lambda: requests.get(
-                f"{self._base_url}{path}",
-                headers=self._merged_headers(tenant_subdomain, headers, user_claim),
-                timeout=(self._connect_timeout, self._read_timeout),
+        return self._handle(
+            self._execute(
+                lambda: requests.get(
+                    f"{self._base_url}{path}",
+                    headers=self._merged_headers(tenant_subdomain, headers, user_claim),
+                    params=params,
+                    timeout=(self._connect_timeout, self._read_timeout),
+                )
             )
-        ))
+        )
 
     def post(
         self,
@@ -57,14 +62,16 @@ class HttpInvoker:
         user_claim: Optional[UserClaim] = None,
     ) -> Response:
         logger.debug("POST %s", path)
-        return self._handle(self._execute(
-            lambda: requests.post(
-                f"{self._base_url}{path}",
-                headers=self._merged_headers(tenant_subdomain, headers, user_claim),
-                json=payload,
-                timeout=(self._connect_timeout, self._read_timeout),
+        return self._handle(
+            self._execute(
+                lambda: requests.post(
+                    f"{self._base_url}{path}",
+                    headers=self._merged_headers(tenant_subdomain, headers, user_claim),
+                    json=payload,
+                    timeout=(self._connect_timeout, self._read_timeout),
+                )
             )
-        ))
+        )
 
     def put(
         self,
@@ -75,14 +82,16 @@ class HttpInvoker:
         user_claim: Optional[UserClaim] = None,
     ) -> Response:
         logger.debug("PUT %s", path)
-        return self._handle(self._execute(
-            lambda: requests.put(
-                f"{self._base_url}{path}",
-                headers=self._merged_headers(tenant_subdomain, headers, user_claim),
-                json=payload,
-                timeout=(self._connect_timeout, self._read_timeout),
+        return self._handle(
+            self._execute(
+                lambda: requests.put(
+                    f"{self._base_url}{path}",
+                    headers=self._merged_headers(tenant_subdomain, headers, user_claim),
+                    json=payload,
+                    timeout=(self._connect_timeout, self._read_timeout),
+                )
             )
-        ))
+        )
 
     def delete(
         self,
@@ -92,13 +101,68 @@ class HttpInvoker:
         user_claim: Optional[UserClaim] = None,
     ) -> Response:
         logger.debug("DELETE %s", path)
-        return self._handle(self._execute(
-            lambda: requests.delete(
-                f"{self._base_url}{path}",
-                headers=self._merged_headers(tenant_subdomain, headers, user_claim),
-                timeout=(self._connect_timeout, self._read_timeout),
+        return self._handle(
+            self._execute(
+                lambda: requests.delete(
+                    f"{self._base_url}{path}",
+                    headers=self._merged_headers(tenant_subdomain, headers, user_claim),
+                    timeout=(self._connect_timeout, self._read_timeout),
+                )
             )
-        ))
+        )
+
+    def post_form(
+        self,
+        path: str,
+        *,
+        data: dict[str, str],
+        files: Optional[dict[str, Any]] = None,
+        tenant_subdomain: Optional[str] = None,
+        user_claim: Optional[UserClaim] = None,
+    ) -> Response:
+        """POST with form-encoded data and optional multipart file uploads.
+
+        Does not set Content-Type — ``requests`` sets it automatically
+        to ``application/x-www-form-urlencoded`` or ``multipart/form-data``.
+        """
+        logger.debug("POST_FORM %s", path)
+        return self._handle(
+            self._execute(
+                lambda: requests.post(
+                    f"{self._base_url}{path}",
+                    headers=self._auth_header(tenant_subdomain, user_claim),
+                    data=data,
+                    files=files,
+                    timeout=(self._connect_timeout, self._read_timeout),
+                )
+            )
+        )
+
+    def get_stream(
+        self,
+        path: str,
+        *,
+        params: Optional[dict[str, str]] = None,
+        tenant_subdomain: Optional[str] = None,
+        user_claim: Optional[UserClaim] = None,
+    ) -> Response:
+        """GET that returns a raw streaming Response for binary content.
+
+        The caller is responsible for closing the response.
+        On non-2xx status the usual typed exception is raised.
+        """
+        logger.debug("GET_STREAM %s", path)
+        return self._handle(
+            self._execute(
+                lambda: requests.get(
+                    f"{self._base_url}{path}",
+                    headers=self._merged_headers(tenant_subdomain, None, user_claim),
+                    params=params,
+                    stream=True,
+                    timeout=(self._connect_timeout, self._read_timeout),
+                )
+            )
+        )
 
     def _execute(self, fn: Any) -> Response:
         """Execute an HTTP call, wrapping network errors into DMSConnectionError."""
@@ -114,7 +178,20 @@ class HttpInvoker:
             logger.error("Unexpected network error")
             raise DMSConnectionError("Unexpected network error") from e
 
-    def _default_headers(self, tenant_subdomain: Optional[str] = None) -> dict[str, str]:
+    def _auth_header(
+        self,
+        tenant_subdomain: Optional[str] = None,
+        user_claim: Optional[UserClaim] = None,
+    ) -> dict[str, str]:
+        """Auth-only headers (no Content-Type). Used by post_form."""
+        return {
+            "Authorization": f"Bearer {self._auth.get_token(tenant_subdomain)}",
+            **self._user_claim_headers(user_claim),
+        }
+
+    def _default_headers(
+        self, tenant_subdomain: Optional[str] = None
+    ) -> dict[str, str]:
         return {
             "Authorization": f"Bearer {self._auth.get_token(tenant_subdomain)}",
             "Content-Type": "application/json",
@@ -152,24 +229,49 @@ class HttpInvoker:
         error_content = response.text
         logger.warning("Request failed with status %s", response.status_code)
 
+        # Try to extract the server's error message from the JSON body
+        try:
+            body = response.json()
+            server_message = body.get("message", "") if isinstance(body, dict) else ""
+        except Exception:
+            server_message = ""
+
         match response.status_code:
             case 400:
                 raise DMSInvalidArgumentException(
-                    "Request contains invalid or disallowed parameters", 400, error_content
+                    server_message
+                    or "Request contains invalid or disallowed parameters",
+                    400,
+                    error_content,
                 )
             case 401 | 403:
                 raise DMSPermissionDeniedException(
-                    "Access denied — invalid or expired token", response.status_code, error_content
+                    server_message or "Access denied — invalid or expired token",
+                    response.status_code,
+                    error_content,
                 )
             case 404:
                 raise DMSObjectNotFoundException(
-                    "The requested resource was not found", 404, error_content
+                    server_message or "The requested resource was not found",
+                    404,
+                    error_content,
+                )
+            case 409:
+                raise DMSConflictException(
+                    server_message
+                    or "The request conflicts with the current state of the resource",
+                    409,
+                    error_content,
                 )
             case 500:
                 raise DMSRuntimeException(
-                    "The DMS service encountered an internal error", 500, error_content
+                    server_message or "The DMS service encountered an internal error",
+                    500,
+                    error_content,
                 )
             case _:
                 raise DMSError(
-                    f"Unexpected response from DMS service : "+error_content, response.status_code, error_content
+                    f"Unexpected response from DMS service: {error_content}",
+                    response.status_code,
+                    error_content,
                 )

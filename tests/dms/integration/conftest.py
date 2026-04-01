@@ -1,5 +1,4 @@
 from sap_cloud_sdk.dms import create_client
-from tests.destination.integration.conftest import _setup_cloud_mode
 import pytest
 from pathlib import Path
 from dotenv import load_dotenv
@@ -13,10 +12,10 @@ def dms_client():
 
     try:
         # Secret resolver handles configuration automatically from /etc/secrets/appfnd or CLOUD_SDK_CFG
-        client = create_client()
+        client = create_client(instance="default")
         return client
     except Exception as e:
-        pytest.fail(f"Failed to create DMS client for cloud integration tests: {e}")  # ty: ignore[invalid-argument-type]
+        pytest.skip(f"DMS integration tests require credentials: {e}")  # ty: ignore[invalid-argument-type, too-many-positional-arguments]
 
 
 

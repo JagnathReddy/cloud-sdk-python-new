@@ -1,20 +1,21 @@
 """Data models for DMS service."""
 
 from dataclasses import dataclass, field, asdict
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, List, Optional, TypedDict, cast
+from typing import Any, Dict, List, Optional, TypedDict, cast
 from urllib.parse import urlparse
+
 
 def _serialize(v: Any) -> Any:
     """Recursively serialize values — converts Enums to their values, handles nested dicts/lists."""
     if isinstance(v, Enum):
         return v.value
     if isinstance(v, dict):
-        d: dict[str, Any] = cast(dict[str, Any],v) 
+        d: dict[str, Any] = cast(dict[str, Any], v)
         return {str(k): _serialize(val) for k, val in d.items()}
     if isinstance(v, list):
-        lst: list[Any] = cast(list[Any],v)
+        lst: list[Any] = cast(list[Any], v)
         return [_serialize(i) for i in lst]
     return v
 
@@ -25,10 +26,10 @@ def _to_dict_drop_none(obj: Any) -> dict[str, Any]:
     return {k: _serialize(v) for k, v in raw.items() if v is not None}
 
 
-
 @dataclass
 class DMSCredentials:
     """Credentials for authenticating with the DMS service."""
+
     instance_name: str
     uri: str
     client_id: str
@@ -41,7 +42,8 @@ class DMSCredentials:
 
     def _validate(self) -> None:
         placeholders = {
-            k: v for k, v in {
+            k: v
+            for k, v in {
                 "uri": self.uri,
                 "token_url": self.token_url,
                 "client_id": self.client_id,
@@ -58,7 +60,9 @@ class DMSCredentials:
         for fname, value in {"uri": self.uri, "token_url": self.token_url}.items():
             parsed = urlparse(value)
             if not parsed.scheme or not parsed.netloc:
-                raise ValueError(f"DMSCredentials.{fname} is not a valid URL: '{value}'")
+                raise ValueError(
+                    f"DMSCredentials.{fname} is not a valid URL: '{value}'"
+                )
 
 
 class RepositoryType(str, Enum):
@@ -88,8 +92,9 @@ class UserClaim:
             - Groups: prefix with ``~`` (e.g. ``~group1``)
             - Extra users: plain username or email
     """
+
     x_ecm_user_enc: Optional[str] = None
-    x_ecm_add_principals: Optional[List[str]] = field(default_factory=lambda:[])
+    x_ecm_add_principals: Optional[List[str]] = field(default_factory=lambda: [])
 
 
 @dataclass
@@ -112,13 +117,13 @@ class InternalRepoRequest:
     isVersionEnabled: Optional[bool] = None
     isVirusScanEnabled: Optional[bool] = None
     skipVirusScanForLargeFile: Optional[bool] = None
-    hashAlgorithms: Optional[str] = None # TODO provide enum
+    hashAlgorithms: Optional[str] = None  # TODO provide enum
     isThumbnailEnabled: Optional[bool] = None
     isEncryptionEnabled: Optional[bool] = None
     externalId: Optional[str] = None
     isContentBridgeEnabled: Optional[bool] = None
     isAIEnabled: Optional[bool] = None
-    repositoryParams: List[RepositoryParam] = field(default_factory=lambda:[])
+    repositoryParams: List[RepositoryParam] = field(default_factory=lambda: [])
 
     def to_dict(self) -> dict[str, Any]:
         return _to_dict_drop_none(self)
@@ -134,7 +139,7 @@ class UpdateRepoRequest:
     isThumbnailEnabled: Optional[bool] = None
     isClientCacheEnabled: Optional[bool] = None
     isAIEnabled: Optional[bool] = None
-    repositoryParams: List[RepositoryParam] = field(default_factory=lambda:[])
+    repositoryParams: List[RepositoryParam] = field(default_factory=lambda: [])
 
     def to_dict(self) -> dict[str, Any]:
         return {"repository": _to_dict_drop_none(self)}
@@ -146,6 +151,7 @@ class RepositoryParams(TypedDict, total=False):
     All keys are optional since the API may not always return every param.
     Unknown params can still be accessed via get_param() on the Repository object.
     """
+
     changeLogDuration: int
     isVersionEnabled: bool
     isThumbnailEnabled: bool
@@ -173,6 +179,7 @@ class Repository:
         repository_sub_type: Repository sub-type (e.g. "SAP Document Management Service").
         repository_type: Repository type (e.g. "internal").
     """
+
     cmis_repository_id: str
     created_time: datetime
     id: str
@@ -182,6 +189,21 @@ class Repository:
     repository_params: RepositoryParams
     repository_sub_type: str
     repository_type: str
+
+    @staticmethod
+    def _parse_repo_params(raw: Any) -> "RepositoryParams":
+        """Normalise repositoryParams from the API response.
+
+        The API may return:
+        - A list of ``{paramName, paramValue}`` dicts (common case)
+        - A single ``{paramName, paramValue}`` dict (when only one param)
+        - An empty list or ``None``
+        """
+        if not raw:
+            return cast(RepositoryParams, {})
+        if isinstance(raw, dict):
+            raw = [raw]
+        return cast(RepositoryParams, {p["paramName"]: p["paramValue"] for p in raw})
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Repository":
@@ -198,12 +220,16 @@ class Repository:
         """
         return cls(
             cmis_repository_id=data["cmisRepositoryId"],
-            created_time=datetime.fromisoformat(data["createdTime"].replace("Z", "+00:00")),
+            created_time=datetime.fromisoformat(
+                data["createdTime"].replace("Z", "+00:00")
+            ),
             id=data["id"],
-            last_updated_time=datetime.fromisoformat(data["lastUpdatedTime"].replace("Z", "+00:00")),
+            last_updated_time=datetime.fromisoformat(
+                data["lastUpdatedTime"].replace("Z", "+00:00")
+            ),
             name=data["name"],
             repository_category=data["repositoryCategory"],
-            repository_params=cast(RepositoryParams, {p["paramName"]: p["paramValue"] for p in data["repositoryParams"]}),
+            repository_params=cls._parse_repo_params(data.get("repositoryParams")),
             repository_sub_type=data["repositorySubType"],
             repository_type=data["repositoryType"],
         )
@@ -218,7 +244,9 @@ class Repository:
             "cmisRepositoryId": self.cmis_repository_id,
             "createdTime": self.created_time.isoformat().replace("+00:00", "Z"),
             "id": self.id,
-            "lastUpdatedTime": self.last_updated_time.isoformat().replace("+00:00", "Z"),
+            "lastUpdatedTime": self.last_updated_time.isoformat().replace(
+                "+00:00", "Z"
+            ),
             "name": self.name,
             "repositoryCategory": self.repository_category,
             "repositoryParams": [
@@ -256,6 +284,7 @@ class CreateConfigRequest:
         CreateConfigRequest(ConfigName.BLOCKED_FILE_EXTENSIONS, "bat,dmg,txt")
         CreateConfigRequest("someCustomConfig", "value")
     """
+
     config_name: ConfigName | str
     config_value: str
 
@@ -276,6 +305,7 @@ class UpdateConfigRequest:
         config_value: Value for the given config name.
         service_instance_id: Optional service instance id.
     """
+
     id: str
     config_name: ConfigName | str
     config_value: str
@@ -295,6 +325,7 @@ class UpdateConfigRequest:
 @dataclass
 class RepositoryConfig:
     """Represents a repository configuration entry."""
+
     id: str
     config_name: str
     config_value: str
@@ -308,7 +339,198 @@ class RepositoryConfig:
             id=data["id"],
             config_name=data["configName"],
             config_value=data["configValue"],
-            created_time=datetime.fromisoformat(data["createdTime"].replace("Z", "+00:00")),
-            last_updated_time=datetime.fromisoformat(data["lastUpdatedTime"].replace("Z", "+00:00")),
+            created_time=datetime.fromisoformat(
+                data["createdTime"].replace("Z", "+00:00")
+            ),
+            last_updated_time=datetime.fromisoformat(
+                data["lastUpdatedTime"].replace("Z", "+00:00")
+            ),
             service_instance_id=data["serviceInstanceId"],
+        )
+
+
+# ---------------------------------------------------------------------------
+# CMIS browser-binding response models
+# ---------------------------------------------------------------------------
+
+
+def _parse_datetime(val: Any) -> Optional[datetime]:
+    """Parse a CMIS timestamp (epoch millis or ISO string) into a datetime."""
+    if val is None:
+        return None
+    if isinstance(val, (int, float)):
+        return datetime.fromtimestamp(val / 1000, tz=timezone.utc)
+    return datetime.fromisoformat(str(val).replace("Z", "+00:00"))
+
+
+def _prop_val(props: Dict[str, Any], key: str) -> Any:
+    """Extract a property value from verbose or succinct CMIS properties.
+
+    Verbose format:  ``{"cmis:name": {"value": "MyDoc"}}``
+    Succinct format: ``{"cmis:name": "MyDoc"}``
+    """
+    raw = props.get(key)
+    if isinstance(raw, dict) and "value" in raw:
+        return raw["value"]
+    return raw
+
+
+@dataclass
+class CmisObject:
+    """Base CMIS object with shared properties."""
+
+    object_id: str = ""
+    name: str = ""
+    base_type_id: str = ""
+    object_type_id: str = ""
+    created_by: Optional[str] = None
+    creation_date: Optional[datetime] = None
+    last_modified_by: Optional[str] = None
+    last_modification_date: Optional[datetime] = None
+    change_token: Optional[str] = None
+    parent_ids: Optional[List[str]] = None
+    description: Optional[str] = None
+    properties: Dict[str, Any] = field(default_factory=dict)
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "CmisObject":
+        props = data.get("succinctProperties") or data.get("properties") or {}
+        return cls(
+            object_id=_prop_val(props, "cmis:objectId") or "",
+            name=_prop_val(props, "cmis:name") or "",
+            base_type_id=_prop_val(props, "cmis:baseTypeId") or "",
+            object_type_id=_prop_val(props, "cmis:objectTypeId") or "",
+            created_by=_prop_val(props, "cmis:createdBy"),
+            creation_date=_parse_datetime(_prop_val(props, "cmis:creationDate")),
+            last_modified_by=_prop_val(props, "cmis:lastModifiedBy"),
+            last_modification_date=_parse_datetime(
+                _prop_val(props, "cmis:lastModificationDate")
+            ),
+            change_token=_prop_val(props, "cmis:changeToken"),
+            parent_ids=_prop_val(props, "sap:parentIds"),
+            description=_prop_val(props, "cmis:description"),
+            properties=props,
+        )
+
+
+@dataclass
+class Folder(CmisObject):
+    """CMIS folder object."""
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Folder":
+        base = CmisObject.from_dict(data)
+        return cls(
+            **{k: v for k, v in base.__dict__.items() if k in cls.__dataclass_fields__}
+        )
+
+
+@dataclass
+class Document(CmisObject):
+    """CMIS document with content stream and versioning metadata."""
+
+    content_stream_length: Optional[int] = None
+    content_stream_mime_type: Optional[str] = None
+    content_stream_file_name: Optional[str] = None
+    version_series_id: Optional[str] = None
+    version_label: Optional[str] = None
+    is_latest_version: Optional[bool] = None
+    is_major_version: Optional[bool] = None
+    is_latest_major_version: Optional[bool] = None
+    is_private_working_copy: Optional[bool] = None
+    checkin_comment: Optional[str] = None
+    is_version_series_checked_out: Optional[bool] = None
+    version_series_checked_out_id: Optional[str] = None
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Document":
+        base = CmisObject.from_dict(data)
+        props = base.properties
+        return cls(
+            **{
+                k: v
+                for k, v in base.__dict__.items()
+                if k in CmisObject.__dataclass_fields__
+            },
+            content_stream_length=_prop_val(props, "cmis:contentStreamLength"),
+            content_stream_mime_type=_prop_val(props, "cmis:contentStreamMimeType"),
+            content_stream_file_name=_prop_val(props, "cmis:contentStreamFileName"),
+            version_series_id=_prop_val(props, "cmis:versionSeriesId"),
+            version_label=_prop_val(props, "cmis:versionLabel"),
+            is_latest_version=_prop_val(props, "cmis:isLatestVersion"),
+            is_major_version=_prop_val(props, "cmis:isMajorVersion"),
+            is_latest_major_version=_prop_val(props, "cmis:isLatestMajorVersion"),
+            is_private_working_copy=_prop_val(props, "cmis:isPrivateWorkingCopy"),
+            checkin_comment=_prop_val(props, "cmis:checkinComment"),
+            is_version_series_checked_out=_prop_val(
+                props, "cmis:isVersionSeriesCheckedOut"
+            ),
+            version_series_checked_out_id=_prop_val(
+                props, "cmis:versionSeriesCheckedOutId"
+            ),
+        )
+
+
+@dataclass
+class Ace:
+    """Single access control entry."""
+
+    principal_id: str
+    permissions: List[str] = field(default_factory=list)
+    is_direct: bool = True
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Ace":
+        principal = data.get("principal", {})
+        return cls(
+            principal_id=principal.get("principalId", ""),
+            permissions=data.get("permissions", []),
+            is_direct=data.get("isDirect", True),
+        )
+
+
+@dataclass
+class Acl:
+    """Access control list for a CMIS object."""
+
+    aces: List[Ace] = field(default_factory=list)
+    is_exact: bool = True
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Acl":
+        raw_aces = data.get("aces", [])
+        return cls(
+            aces=[Ace.from_dict(a) for a in raw_aces],
+            is_exact=data.get("isExact", True),
+        )
+
+
+@dataclass
+class ChildrenPage:
+    """Paginated result from a CMIS ``getChildren`` request."""
+
+    objects: List[CmisObject] = field(default_factory=list)
+    has_more_items: bool = False
+    num_items: Optional[int] = None
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "ChildrenPage":
+        raw_objects = data.get("objects") or []
+        parsed: List[CmisObject] = []
+        for entry in raw_objects:
+            obj_data = entry.get("object") or entry
+            props = (
+                obj_data.get("succinctProperties") or obj_data.get("properties") or {}
+            )
+            base_type = _prop_val(props, "cmis:baseTypeId") or ""
+            if base_type == "cmis:document":
+                parsed.append(Document.from_dict(obj_data))
+            elif base_type == "cmis:folder":
+                parsed.append(Folder.from_dict(obj_data))
+            else:
+                parsed.append(CmisObject.from_dict(obj_data))
+        return cls(
+            objects=parsed,
+            has_more_items=data.get("hasMoreItems", False),
+            num_items=data.get("numItems"),
         )

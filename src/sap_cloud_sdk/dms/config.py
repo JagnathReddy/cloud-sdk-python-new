@@ -3,29 +3,33 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional
 from urllib.parse import urlparse
 
-from sap_cloud_sdk.core.secret_resolver.resolver import read_from_mount_and_fallback_to_env_var
+from sap_cloud_sdk.core.secret_resolver.resolver import (
+    read_from_mount_and_fallback_to_env_var,
+)
 from sap_cloud_sdk.destination.exceptions import ConfigError
 from sap_cloud_sdk.dms.model import DMSCredentials
+
 
 @dataclass
 class BindingData:
     """Dataclass for DMS binding data with URI and UAA credentials.
-    
+
     Attributes:
         uri: The URI endpoint for the DMS service
         uaa: JSON string containing XSUAA authentication credentials
     """
-    instance_name: str 
+
+    instance_name: str
     uri: str
     uaa: str
 
     def validate(self) -> None:
         """Validate the binding data.
-        
+
         Validates that:
         - uri is a valid URI
         - uaa is valid JSON and contains required credential fields
-        
+
         Raises:
             ValueError: If uri is not a valid URI
             json.JSONDecodeError: If uaa is not valid JSON
@@ -36,7 +40,7 @@ class BindingData:
 
     def _validate_uri(self) -> None:
         """Validate that uri is a valid URI.
-        
+
         Raises:
             ValueError: If uri is not a valid URI
         """
@@ -52,17 +56,12 @@ class BindingData:
 
     def _validate_uaa(self) -> None:
         """Validate that uaa is valid JSON with required credential fields.
-        
+
         Raises:
             json.JSONDecodeError: If uaa is not valid JSON
             ValueError: If required fields are missing from UAA credentials
         """
-        required_fields = {
-            "clientid",
-            "clientsecret",
-            "url",
-            "identityzone"
-        }
+        required_fields = {"clientid", "clientsecret", "url", "identityzone"}
 
         try:
             uaa_data: Dict[str, Any] = json.loads(self.uaa)
@@ -78,13 +77,13 @@ class BindingData:
             raise ValueError(
                 f"UAA credentials missing required fields: {', '.join(sorted(missing_fields))}"
             )
-    
+
     def to_credentials(self) -> DMSCredentials:
         """Convert the binding data to DMSCredentials.
-        
+
         Parses the UAA JSON and constructs a DMSCredentials object with the necessary information
         for authenticating and connecting to the DMS service.
-        
+
         Returns:
             DMSCredentials: The credentials extracted from the binding data
         """
@@ -97,12 +96,12 @@ class BindingData:
             client_id=uaa_data["clientid"],
             client_secret=uaa_data["clientsecret"],
             token_url=token_url,
-            identityzone=uaa_data["identityzone"]
+            identityzone=uaa_data["identityzone"],
         )
 
 
 def load_sdm_config_from_env_or_mount(instance: Optional[str] = None) -> DMSCredentials:
-    """Load Destination configuration from mount with env fallback and normalize.
+    """Load DMS configuration from mount with env fallback and normalize.
 
     Args:
         instance: Logical instance name; defaults to "default" if not provided.
@@ -114,7 +113,9 @@ def load_sdm_config_from_env_or_mount(instance: Optional[str] = None) -> DMSCred
         ConfigError: If loading or validation fails.
     """
     inst = instance or "default"
-    binding = BindingData(uri="", uaa="", instance_name="")  # Initialize with empty values; will be populated by resolver
+    binding = BindingData(
+        uri="", uaa="", instance_name=""
+    )  # Initialize with empty values; will be populated by resolver
 
     try:
         # 1) Try mount at /etc/secrets/appfnd/destination/{instance}/...
@@ -122,7 +123,7 @@ def load_sdm_config_from_env_or_mount(instance: Optional[str] = None) -> DMSCred
         read_from_mount_and_fallback_to_env_var(
             base_volume_mount="/etc/secrets/appfnd",
             base_var_name="CLOUD_SDK_CFG",
-            module="sdm", #TODO check if this should be "dms" or "sdm"
+            module="sdm",  # TODO check if this should be "dms" or "sdm"
             instance=inst,
             target=binding,
         )
